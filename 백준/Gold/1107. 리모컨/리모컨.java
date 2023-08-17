@@ -25,6 +25,7 @@ public class Main {
 		int min = -1;
 		int max = -1;
 
+		// N보다 작으면서 최대인 채널 (입력 가능한 최소 채널은 0)
 		int num;
 		for (num = N; num >= 0; num--) {
 			boolean can = true;
@@ -40,7 +41,8 @@ public class Main {
 			}
 		}
 
-		for (num = N; num <= 1000000; num++) {
+		// N보다 크면서 최소인 채널 (입력 가능한 최대 채널은 100만)(더 위로는 볼 필요가 없다)
+		for (num = N; num <= 1000000-101; num++) {
 			boolean can = true;
 
 			String tmp = String.valueOf(num);
@@ -57,11 +59,13 @@ public class Main {
 		int min_answer;
 		int max_answer;
 
+		// 채널 못 찾았으면?
 		if (min != -1)
 			min_answer = String.valueOf(min).length() + N - min;
 		else {
 			min_answer = Integer.MAX_VALUE;
 		}
+		// 채널 못 찾았으면?
 		if (max != -1)
 			max_answer = String.valueOf(max).length() + max - N;
 		else {
