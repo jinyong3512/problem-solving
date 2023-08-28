@@ -50,22 +50,12 @@ public class Main {
 			int codes_index = 0;
 			int inputs_index = 0;
 			int count = 0;
+			int count2 = 0;
 
 			boolean loop = false;
 			boolean[] loops = new boolean[codes.length];
 
-			while (codes_index < c) {
-				count++;
-				
-				if (count >= 50000001)
-					loop = true;
-
-				if (loop)
-					loops[codes_index] = true;
-
-				if (count >= 50000000 + 50000000)
-					break;
-
+			while (true) {
 				if (codes[codes_index] == '-') {
 					memories[pointer]--;
 					if (memories[pointer] == -1)
@@ -103,6 +93,22 @@ public class Main {
 					}
 				}
 				codes_index++;
+				count++;
+
+				if (codes_index >= c)
+					break;
+
+				if (count >= 50000000)
+					loop = true;
+
+				if (loop) {
+					loops[codes_index] = true;
+					count2++;
+				}
+
+				if (count2 >= 50000000)
+					break;
+
 			}
 
 			if (loop) {
