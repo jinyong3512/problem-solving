@@ -1,16 +1,16 @@
-import java.util.*; // 유틸 라이브러리 임포트
-import java.io.*; // 입출력 라이브러리 임포트
+import java.io.*;
+import java.util.*;
 
-//
+public class Main {
 
-public class Main { // 메인 클래스
+	public static int answer = Integer.MIN_VALUE;
 
-	public static int answer = 0;
+	public static int recursion_count = 0;
 
-	public static void main(String[] args) throws IOException { // 메인 클래스 실행
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in)); // 입력 받는 라이브러리 객체 생성 초기화
-		StringBuilder sb = new StringBuilder(); // 출력 하는 라이브러리 객체 생성 초기화
-		StringTokenizer st; // 끊어 읽는 용도 라이브러리 객체 생성
+	public static void main(String[] args) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		StringBuilder sb = new StringBuilder();
+		StringTokenizer st;
 
 		int N;
 		int[][] arr;
@@ -20,170 +20,202 @@ public class Main { // 메인 클래스
 
 		for (int i = 0; i < N; i++) {
 			st = new StringTokenizer(br.readLine());
-			for (int j = 0; j < 9; j++) {
+			for (int j = 0; j < 9; j++)
 				arr[i][j] = Integer.parseInt(st.nextToken());
-			}
 		}
 
-		////////////////////////////////////////////////////
+		///////////////////////////////////////////////////
 
-		// 8P8 해서 simulation 돌려 그냥
+		// 순열
 		boolean[] visited = new boolean[9];
-		ArrayList<Integer> arrayList = new ArrayList<>();
-		permutation(arr, 8, 8, visited, arrayList, 0);
+		int[] batter = new int[9];
+		permutation(arr, visited, batter, 0);
+
 		System.out.println(answer);
+//		System.out.println(recursion_count);
+
 	}
 
-	public static void permutation(int[][] arr, int n, int r, boolean[] visited, ArrayList<Integer> arrayList,
-			int depth) {
+	public static void permutation(int[][] arr, boolean[] visited, int[] batter, int depth) {
 
-		if (depth == r) {
-			arrayList.add(3, 0);
-			simulation(arr, arrayList);
-			arrayList.remove(3);
+		recursion_count++;
+
+		if (depth == 3) {
+			visited[0] = true;
+			batter[depth] = 0;
+			permutation(arr, visited, batter, depth + 1);
+			visited[0] = false;
+		}
+
+		if (depth == 9) {
+			answer = Math.max(answer, simulation2(arr, batter));
 			return;
 		}
 
-		for (int i = 1; i <= n; i++) {
-			if (!visited[i]) {
+		for (int i = 0; i < visited.length; i++) {
+			if (!visited[i] && i != 0) {
 				visited[i] = true;
-				arrayList.add(i);
-				permutation(arr, n, r, visited, arrayList, depth + 1);
+				batter[depth] = i;
+				permutation(arr, visited, batter, depth + 1);
 				visited[i] = false;
-				arrayList.remove(arrayList.size() - 1);
 			}
 		}
-
 	}
 
-	public static void simulation(int[][] arr, ArrayList<Integer> arrayList) {
-		int i = 0;
-		int j = 0;
+	public static int simulation(int[][] arr, int[] batter) {
+		int arr_i_index = 0;
+		int batter_index = 0;
+		int out_number = 0;
+		int answer_candidate = 0;
+		Queue<Boolean> queue = new LinkedList<>();
+		queue.add(false);
+		queue.add(false);
+		queue.add(false);
 
-		int out_count = 0;
-		int[] runner = new int[4];
+		while (arr_i_index < arr.length) {
+			if (arr[arr_i_index][batter[batter_index]] == 0) {
+				out_number++;
+				if (out_number == 3) {
+					out_number = 0;
+					arr_i_index++;
+					queue = new LinkedList<>();
+					queue.add(false);
+					queue.add(false);
+					queue.add(false);
+				}
+			} else if (arr[arr_i_index][batter[batter_index]] == 1) {
+				queue.add(true);
+				if (queue.remove())
+					answer_candidate++;
+			} else if (arr[arr_i_index][batter[batter_index]] == 2) {
+				queue.add(true);
+				if (queue.remove())
+					answer_candidate++;
 
-		int arrayList_index = 0;
-		int score = 0;
+				queue.add(false);
+				if (queue.remove())
+					answer_candidate++;
+			} else if (arr[arr_i_index][batter[batter_index]] == 3) {
+				queue.add(true);
+				if (queue.remove())
+					answer_candidate++;
 
-		// while문이 도는 기준은 한 사람마다
-		while (i < arr.length) {
-			// arrayList_index는 타순을 얻을 수 있는 0~8 숫자
-			j = arrayList.get(arrayList_index);
-			arrayList_index++;
-			arrayList_index %= 9;
+				queue.add(false);
+				if (queue.remove())
+					answer_candidate++;
 
-			// 아웃
-			if (arr[i][j] == 0) {
-				out_count++;
-				// 이닝 종료
-				if (out_count == 3) {
-					i++; // 이닝 넘겨
-					out_count = 0;
-					runner = new int[4];
-				}
-			}
-			// 안타
-			else if (arr[i][j] == 1) {
-				for (int x = 3; x >= 1; x--) {
-					runner[x] = runner[x - 1];
-				}
-				if (runner[3] == 1) {
-					runner[3] = 0;
-					score++;
-				}
-				runner[0] = 1;
+				queue.add(false);
+				if (queue.remove())
+					answer_candidate++;
+			} else if (arr[arr_i_index][batter[batter_index]] == 4) {
+				queue.add(true);
+				if (queue.remove())
+					answer_candidate++;
 
-			}
-			// 2루타
-			else if (arr[i][j] == 2) {
-				for (int x = 3; x >= 1; x--) {
-					runner[x] = runner[x - 1];
-				}
-				if (runner[3] == 1) {
-					runner[3] = 0;
-					score++;
-				}
-				runner[0] = 1;
+				queue.add(false);
+				if (queue.remove())
+					answer_candidate++;
 
-				for (int x = 3; x >= 1; x--) {
-					runner[x] = runner[x - 1];
-				}
-				if (runner[3] == 1) {
-					runner[3] = 0;
-					score++;
-				}
-				runner[0] = 0;
-			}
+				queue.add(false);
+				if (queue.remove())
+					answer_candidate++;
 
-			// 3루타
-			else if (arr[i][j] == 3) {
-				for (int x = 3; x >= 1; x--) {
-					runner[x] = runner[x - 1];
-				}
-				if (runner[3] == 1) {
-					runner[3] = 0;
-					score++;
-				}
-				runner[0] = 1;
-
-				for (int x = 3; x >= 1; x--) {
-					runner[x] = runner[x - 1];
-				}
-				if (runner[3] == 1) {
-					runner[3] = 0;
-					score++;
-				}
-				runner[0] = 0;
-
-				for (int x = 3; x >= 1; x--) {
-					runner[x] = runner[x - 1];
-				}
-				if (runner[3] == 1) {
-					runner[3] = 0;
-					score++;
-				}
+				queue.add(false);
+				if (queue.remove())
+					answer_candidate++;
 			}
 
-			// 홈런
-			else {
-				for (int x = 3; x >= 1; x--) {
-					runner[x] = runner[x - 1];
-				}
-				if (runner[3] == 1) {
-					runner[3] = 0;
-					score++;
-				}
-				runner[0] = 1;
-
-				for (int x = 3; x >= 1; x--) {
-					runner[x] = runner[x - 1];
-				}
-				if (runner[3] == 1) {
-					runner[3] = 0;
-					score++;
-				}
-				runner[0] = 0;
-
-				for (int x = 3; x >= 1; x--) {
-					runner[x] = runner[x - 1];
-				}
-				if (runner[3] == 1) {
-					runner[3] = 0;
-					score++;
-				}
-
-				for (int x = 3; x >= 1; x--) {
-					runner[x] = runner[x - 1];
-				}
-				if (runner[3] == 1) {
-					runner[3] = 0;
-					score++;
-				}
-			}
+			batter_index = (batter_index + 1) % 9;
 		}
 
-		answer = Math.max(answer, score);
+		return answer_candidate;
 	}
 
+	public static int simulation2(int[][] arr, int[] batter) {
+		int arr_i_index = 0;
+		int batter_index = 0;
+		int out_number = 0;
+		int answer_candidate = 0;
+
+		boolean base1 = false;
+		boolean base2 = false;
+		boolean base3 = false;
+
+		while (arr_i_index < arr.length) {
+			if (arr[arr_i_index][batter[batter_index]] == 0) {
+				out_number++;
+				if (out_number == 3) {
+					out_number = 0;
+					arr_i_index++;
+					base1 = false;
+					base2 = false;
+					base3 = false;
+				}
+			} else if (arr[arr_i_index][batter[batter_index]] == 1) {
+				if (base3)
+					answer_candidate++;
+				base3 = base2;
+				base2 = base1;
+				base1 = true;
+			} else if (arr[arr_i_index][batter[batter_index]] == 2) {
+				if (base3)
+					answer_candidate++;
+				base3 = base2;
+				base2 = base1;
+				base1 = true;
+
+				if (base3)
+					answer_candidate++;
+				base3 = base2;
+				base2 = base1;
+				base1 = false;
+			} else if (arr[arr_i_index][batter[batter_index]] == 3) {
+				if (base3)
+					answer_candidate++;
+				base3 = base2;
+				base2 = base1;
+				base1 = true;
+
+				if (base3)
+					answer_candidate++;
+				base3 = base2;
+				base2 = base1;
+				base1 = false;
+
+				if (base3)
+					answer_candidate++;
+				base3 = base2;
+				base2 = base1;
+				base1 = false;
+			} else if (arr[arr_i_index][batter[batter_index]] == 4) {
+				if (base3)
+					answer_candidate++;
+				base3 = base2;
+				base2 = base1;
+				base1 = true;
+
+				if (base3)
+					answer_candidate++;
+				base3 = base2;
+				base2 = base1;
+				base1 = false;
+
+				if (base3)
+					answer_candidate++;
+				base3 = base2;
+				base2 = base1;
+				base1 = false;
+
+				if (base3)
+					answer_candidate++;
+				base3 = base2;
+				base2 = base1;
+				base1 = false;
+			}
+
+			batter_index = (batter_index + 1) % 9;
+		}
+
+		return answer_candidate;
+	}
 }
