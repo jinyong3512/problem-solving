@@ -1,143 +1,118 @@
 import java.io.*;
 import java.util.*;
 
-class Data {
-	int y;
-	int x;
-	int depth;
-	boolean chance;
+class Point2 {
+	int r, c, value;
+	int flag;
+	// flag가 0 -> 기회안 쓴애
+	// flag가 1 -> 기회 쓴애
+	// boolean flag 에서 바꾼 이유 visited[0][1] 인덱스 그대로 쓰려고
+	// boolean 쓰면 if(flag) visited[1]에 저장 이런식으로 한번 더 if문을 써야 할 것 같아서
 
-	Data(int y, int x, int depth, boolean chance) {
-		this.y = y;
-		this.x = x;
-		this.depth = depth;
-		this.chance = chance;
+	Point2(int r, int c, int value, int flag) {
+		this.r = r;
+		this.c = c;
+		this.value = value;
+		this.flag = flag;
 	}
 }
 
-class Main {
+public class Main {
+
+	static int[] dr = new int[] { 0, 1, 0, -1 };
+	static int[] dc = new int[] { 1, 0, -1, 0 };
+
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 		StringBuilder sb = new StringBuilder();
-		StringTokenizer st;
 
-		int N, M;
-		int[][] arr;
-
-		st = new StringTokenizer(br.readLine());
-		N = Integer.parseInt(st.nextToken());
-		M = Integer.parseInt(st.nextToken());
-		arr = new int[N][M];
+		StringTokenizer st = new StringTokenizer(br.readLine());
+		int N = Integer.parseInt(st.nextToken());
+		int M = Integer.parseInt(st.nextToken());
+		int[][] map = new int[N][M];
+		boolean[][][] visited = new boolean[N][M][2];
 
 		for (int i = 0; i < N; i++) {
-			String line = br.readLine();
+			String str = br.readLine();
 			for (int j = 0; j < M; j++) {
-				arr[i][j] = line.charAt(j) - '0';
+				map[i][j] = (int) (str.charAt(j) - '0');
 			}
 		}
 
-		///////////////////////////////////////////////////
+		//////////////////////////////////////////////////////////////
 
-		Queue<Data> queue = new LinkedList<>();
-		// 찬스 안쓴애
-		boolean[][] visited = new boolean[N][M];
-		// 찬스 쓴애
-		boolean[][] visited2 = new boolean[N][M];
+		Queue<Point2> que = new ArrayDeque<>();
 
-		queue.add(new Data(0, 0, 1, true));
+		que.offer(new Point2(0, 0, 1, 0)); // 시작점과 한칸째라고 쓰고 맨 처음에는 부시기 기회 안 쓴애~
+		visited[0][0][0] = true; // visited[0]은 부시기 기회 안쓴애로 쓰기로 약속 visited[1]은 부시기 쓴애로 약속
 
-		while (!queue.isEmpty()) {
-			Data tmp = queue.remove();
+		while (!que.isEmpty()) {
+			Point2 curr = que.poll();
 
-			if (tmp.y == N - 1 && tmp.x == M - 1) {
-				sb.append(tmp.depth);
-				break;
+			// 도착 지점 종료
+			if (curr.r == N-1 && curr.c == M-1) {
+				sb.append(curr.value);
+				bw.write(sb.toString());
+				bw.flush();
+				bw.close();
+				return;
 			}
 
-			// 찬스가 있네
-			if (tmp.chance) {
-				// 찬스 쓰기
-				// 위로
-				if (tmp.y - 1 >= 0 && !visited2[tmp.y - 1][tmp.x] && arr[tmp.y - 1][tmp.x] == 1) {
-					visited2[tmp.y - 1][tmp.x] = true;
-					queue.add(new Data(tmp.y - 1, tmp.x, tmp.depth + 1, !tmp.chance));
+			for (int d = 0; d < 4; d++) {
+
+				int row = curr.r + dr[d];
+				int col = curr.c + dc[d];
+
+				// 칸 안에 있어?
+				if (-1 < row && row < N && -1 < col && col < M) {
+					// 나 찬스 있어!
+					if (curr.flag == 0) {
+						// 찬스 쓸꺼야!
+						if (!visited[row][col][1] && map[row][col] == 1) {
+							visited[row][col][1] = true;
+							que.offer(new Point2(row, col, curr.value + 1, 1));
+						}
+						// 찬스 안써
+						if (!visited[row][col][0] && map[row][col] == 0) {
+							visited[row][col][0] = true;
+							que.offer(new Point2(row, col, curr.value + 1, 0));
+						}
+					}
+
+					// 나 찬스 없음!
+					else {
+						// 찬스 쓸꺼야!
+						// 안돼
+
+						// 찬스 안써
+						if (!visited[row][col][1] && map[row][col] == 0) {
+							visited[row][col][1] = true;
+							que.offer(new Point2(row, col, curr.value + 1, 1));
+						}
+					}
+
+//					// 찬스 쓴애야 || 부실벽이 없음
+//					if (curr.flag || map[row][col] == 0) {
+//						visited[row][col][0] = true;
+//						que.offer(new Point2(row, col, curr.value + 1, curr.flag));
+//					} else { // 벽 부실 기회 있음
+//						if (map[row][col] == 1) { // 부신다
+//							visited[row][col][0] = true;
+//							visited[row][col][1] = true;
+//							que.offer(new Point2(row, col, curr.value + 1, true));
+//						} else { // 안 부신다
+//							que.offer(new Point2(row, col, curr.value + 1, curr.flag));
+//						}
+//					}
 				}
 
-				// 아래로
-				if (tmp.y + 1 < N && !visited2[tmp.y + 1][tmp.x] && arr[tmp.y + 1][tmp.x] == 1) {
-					visited2[tmp.y + 1][tmp.x] = true;
-					queue.add(new Data(tmp.y + 1, tmp.x, tmp.depth + 1, !tmp.chance));
-				}
-
-				// 왼쪽
-				if (tmp.x - 1 >= 0 && !visited2[tmp.y][tmp.x - 1] && arr[tmp.y][tmp.x - 1] == 1) {
-					visited2[tmp.y][tmp.x - 1] = true;
-					queue.add(new Data(tmp.y, tmp.x - 1, tmp.depth + 1, !tmp.chance));
-				}
-
-				// 오른쪽
-				if (tmp.x + 1 < M && !visited2[tmp.y][tmp.x + 1] && arr[tmp.y][tmp.x + 1] == 1) {
-					visited2[tmp.y][tmp.x + 1] = true;
-					queue.add(new Data(tmp.y, tmp.x + 1, tmp.depth + 1, !tmp.chance));
-				}
-				
-				// 찬스 있는데 안쓸래
-				// 위로
-				if (tmp.y - 1 >= 0 && !visited[tmp.y - 1][tmp.x] && arr[tmp.y - 1][tmp.x] == 0) {
-					visited[tmp.y - 1][tmp.x] = true;
-					queue.add(new Data(tmp.y - 1, tmp.x, tmp.depth + 1, tmp.chance));
-				}
-
-				// 아래로
-				if (tmp.y + 1 < N && !visited[tmp.y + 1][tmp.x] && arr[tmp.y + 1][tmp.x] == 0) {
-					visited[tmp.y + 1][tmp.x] = true;
-					queue.add(new Data(tmp.y + 1, tmp.x, tmp.depth + 1, tmp.chance));
-				}
-
-				// 왼쪽
-				if (tmp.x - 1 >= 0 && !visited[tmp.y][tmp.x - 1] && arr[tmp.y][tmp.x - 1] == 0) {
-					visited[tmp.y][tmp.x - 1] = true;
-					queue.add(new Data(tmp.y, tmp.x - 1, tmp.depth + 1, tmp.chance));
-				}
-
-				// 오른쪽
-				if (tmp.x + 1 < M && !visited[tmp.y][tmp.x + 1] && arr[tmp.y][tmp.x + 1] == 0) {
-					visited[tmp.y][tmp.x + 1] = true;
-					queue.add(new Data(tmp.y, tmp.x + 1, tmp.depth + 1, tmp.chance));
-				}
-			} 
-			// 찬스 없음
-			else {
-
-				// 위로
-				if (tmp.y - 1 >= 0 && !visited2[tmp.y - 1][tmp.x] && arr[tmp.y - 1][tmp.x] == 0) {
-					visited2[tmp.y - 1][tmp.x] = true;
-					queue.add(new Data(tmp.y - 1, tmp.x, tmp.depth + 1, tmp.chance));
-				}
-
-				// 아래로
-				if (tmp.y + 1 < N && !visited2[tmp.y + 1][tmp.x] && arr[tmp.y + 1][tmp.x] == 0) {
-					visited2[tmp.y + 1][tmp.x] = true;
-					queue.add(new Data(tmp.y + 1, tmp.x, tmp.depth + 1, tmp.chance));
-				}
-
-				// 왼쪽
-				if (tmp.x - 1 >= 0 && !visited2[tmp.y][tmp.x - 1] && arr[tmp.y][tmp.x - 1] == 0) {
-					visited2[tmp.y][tmp.x - 1] = true;
-					queue.add(new Data(tmp.y, tmp.x - 1, tmp.depth + 1, tmp.chance));
-				}
-
-				// 오른쪽
-				if (tmp.x + 1 < M && !visited2[tmp.y][tmp.x + 1] && arr[tmp.y][tmp.x + 1] == 0) {
-					visited2[tmp.y][tmp.x + 1] = true;
-					queue.add(new Data(tmp.y, tmp.x + 1, tmp.depth + 1, tmp.chance));
-				}
 			}
 
 		}
+		bw.write("-1");
+		bw.flush();
+		bw.close();
 
-		if (sb.length() == 0)
-			sb.append("-1");
-		System.out.println(sb);
 	}
 }
