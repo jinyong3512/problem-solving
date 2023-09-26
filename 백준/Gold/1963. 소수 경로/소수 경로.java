@@ -1,82 +1,97 @@
 import java.io.*;
 import java.util.*;
 
-public class Main {
+class Data {
+	int number, depth;
 
-	static boolean[] isNotPrime = new boolean[100001];
-	public static void main(String[] args) throws IOException{
+	Data(int number, int depth) {
+		this.number = number;
+		this.depth = depth;
+	}
+}
+
+public class Main {
+	public static void main(String[] args) throws Exception {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		StringBuilder sb = new StringBuilder();
-		int t = Integer.parseInt(br.readLine());
-		checkPrime();
-		
-		StringTokenizer st= null;
-		for(int i=0; i<t; i++) {
+		StringTokenizer st;
+
+		int T;
+		T = Integer.parseInt(br.readLine());
+
+		for (int test_case = 1; test_case <= T; test_case++) {
 			st = new StringTokenizer(br.readLine());
-			int src = Integer.parseInt(st.nextToken());
-			int answer = Integer.parseInt(st.nextToken());
-			
-			sb.append(bfs(src,answer)+"\n");
-		}
-		System.out.println(sb.toString());
-		
-	}
-	
-	static String bfs(int src, int answer) {
-		Queue<Integer> q = new LinkedList<>();
-		Map<Integer, Integer> map = new HashMap<>();
-		
-		map.put(src,0);
-		q.add(src);
-		
-		while(!q.isEmpty()) {
-			int pos = q.poll();
-			int move = map.get(pos);
-			
-			if(pos == answer) {
-				return move+"";
-			}
-			
-			int[] pNum = {pos/1000, (pos/100)%10, (pos/10)%10, pos%10}; 
-			for(int i=0; i<4; i++) {
-				for(int j=0; j<10; j++) {
-					if(i==0 && j==0) continue; // 1000이상 
-					
-					int tmp = pNum[i];
-					pNum[i] = j;
-					int next = changePassword(pNum);
-					pNum[i] = tmp;
-					
-					if(isNotPrime[next]) continue;
-					
-					if(!map.containsKey(next)) {
-						q.add(next);
-						map.put(next, move+1);
+			int number1 = Integer.parseInt(st.nextToken());
+			int number2 = Integer.parseInt(st.nextToken());
+
+			Queue<Data> queue = new LinkedList<>();
+			boolean[] visited = new boolean[10000];
+
+			queue.add(new Data(number1, 0));
+			visited[number1] = true;
+
+			while (!queue.isEmpty()) {
+				Data cur = queue.remove();
+
+//				System.out.println(cur.number);
+
+				if (cur.number == number2) {
+					System.out.println(cur.depth);
+					break;
+				}
+
+				// 첫 자리
+				for (int i = 1; i <= 9; i++) {
+					String result = String.valueOf(i) + String.valueOf(cur.number).substring(1);
+
+					if (isSosu(Integer.parseInt(result)) && !visited[Integer.parseInt(result)]) {
+						visited[Integer.parseInt(result)] = true;
+						queue.add(new Data(Integer.parseInt(result), cur.depth + 1));
 					}
 				}
+
+				// 둘 자리
+				for (int i = 0; i <= 9; i++) {
+					String result = String.valueOf(cur.number).charAt(0) + String.valueOf(i)
+							+ String.valueOf(cur.number).substring(2);
+
+					if (isSosu(Integer.parseInt(result)) && !visited[Integer.parseInt(result)]) {
+						visited[Integer.parseInt(result)] = true;
+						queue.add(new Data(Integer.parseInt(result), cur.depth + 1));
+					}
+				}
+
+				// 셋 자리
+				for (int i = 0; i <= 9; i++) {
+					String result = String.valueOf(cur.number).substring(0, 2) + String.valueOf(i)
+							+ String.valueOf(cur.number).substring(3);
+
+					if (isSosu(Integer.parseInt(result)) && !visited[Integer.parseInt(result)]) {
+						visited[Integer.parseInt(result)] = true;
+						queue.add(new Data(Integer.parseInt(result), cur.depth + 1));
+					}
+				}
+
+				// 넷 자리
+				for (int i = 0; i <= 9; i++) {
+					String result = String.valueOf(cur.number).substring(0, 3) + String.valueOf(i);
+
+					if (isSosu(Integer.parseInt(result)) && !visited[Integer.parseInt(result)]) {
+						visited[Integer.parseInt(result)] = true;
+						queue.add(new Data(Integer.parseInt(result), cur.depth + 1));
+					}
+				}
+
 			}
 		}
-		
-		return "Impossible";
+
 	}
-	
-	static int changePassword(int[] pNum) {
-		int num =0;
-		for(int i=0; i<4; i++) {
-			num += pNum[i]*(Math.pow(10, 3-i));
+
+	public static boolean isSosu(int number) {
+		for (int i = 2; i * i <= number; i++) {
+			if (number % i == 0)
+				return false;
 		}
-		return num;
-		
-	}
-	
-	static void checkPrime() {
-		for(int i=2; i<10000; i++) {
-			if(!isNotPrime[i]) {
-				for(int j=i*i; j<10000; j+=i) {
-					isNotPrime[j] = true;
-				}	
-			}
-			
-		}
+		return true;
 	}
 }
