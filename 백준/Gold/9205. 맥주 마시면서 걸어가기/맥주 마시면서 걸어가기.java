@@ -2,78 +2,80 @@ import java.io.*;
 import java.util.*;
 
 class Point {
-	int x, y;
+	int y, x;
 
-	Point(int x, int y) {
-		this.x = x;
+	Point(int y, int x) {
 		this.y = y;
+		this.x = x;
 	}
 }
 
 public class Main {
 
-	public static int n;
-	public static Point start;
-	public static Point[] stores;
-	public static Point end;
+	public static boolean answer;
 
-	public static Queue<Point> queue;
-	public static boolean[] visited;
-	public static boolean success;
-
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws Exception {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		StringBuilder sb = new StringBuilder();
 		StringTokenizer st;
 
-		int test_case = Integer.parseInt(br.readLine());
-		for (int t = 0; t < test_case; t++) {
+		int t;
+		t = Integer.parseInt(br.readLine());
+
+		for (int test_case = 1; test_case <= t; test_case++) {
+
+			int n;
+			Point start;
+			Point[] con;
+			Point end;
+
+			//////////////////////////////////////////////////
+
 			n = Integer.parseInt(br.readLine());
+			con = new Point[n];
 
 			st = new StringTokenizer(br.readLine());
 			start = new Point(Integer.parseInt(st.nextToken()), Integer.parseInt(st.nextToken()));
 
-			stores = new Point[n];
 			for (int i = 0; i < n; i++) {
 				st = new StringTokenizer(br.readLine());
-				stores[i] = new Point(Integer.parseInt(st.nextToken()), Integer.parseInt(st.nextToken()));
+				con[i] = new Point(Integer.parseInt(st.nextToken()), Integer.parseInt(st.nextToken()));
 			}
 
 			st = new StringTokenizer(br.readLine());
 			end = new Point(Integer.parseInt(st.nextToken()), Integer.parseInt(st.nextToken()));
 
-			//////////////////////////////////////////////////////////////////////////////////////////////
+			//////////////////////////////////////////////////
 
-			queue = new LinkedList<>();
-			queue.add(start);
+			answer = false;
 
-			visited = new boolean[n];
-			success = false;
+			// 순열이야
+			// 순열 아니고 그냥 순회네
+			boolean[] visited = new boolean[n];
+			dfs(start, end, con, start, visited);
 
-			while (!queue.isEmpty()) {
-				Point point = queue.remove();
-
-				if (Math.abs(end.x - point.x) + Math.abs(end.y - point.y) <= 20 * 50) {
-					success = true;
-					break;
-				}
-
-				for (int i = 0; i < n; i++) {
-					Point store = stores[i];
-					if (Math.abs(store.x - point.x) + Math.abs(store.y - point.y) <= 20 * 50 && !visited[i]) {
-						visited[i]=true;
-						queue.add(store);
-					}
-				}
-
-			}
-
-			if (success)
-				System.out.println("happy");
+			if (answer)
+				sb.append("happy").append("\n");
 			else
-				System.out.println("sad");
+				sb.append("sad").append("\n");
 
 		}
+		System.out.println(sb);
 
+	}
+
+	public static void dfs(Point start, Point end, Point[] con, Point cur, boolean[] visited) {
+
+		if (Math.abs(cur.y - end.y) + Math.abs(cur.x - end.x) <= 20 * 50) {
+			answer = true;
+			return;
+		}
+
+		for (int i = 0; i < con.length; i++) {
+			if (Math.abs(cur.y - con[i].y) + Math.abs(cur.x - con[i].x) <= 20 * 50 && !visited[i]) {
+				visited[i] = true;
+				dfs(start, end, con, new Point(con[i].y, con[i].x), visited);
+			}
+		}
 	}
 }
