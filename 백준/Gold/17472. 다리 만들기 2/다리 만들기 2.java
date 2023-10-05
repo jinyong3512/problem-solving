@@ -1,150 +1,76 @@
 import java.io.*;
 import java.util.*;
 
-class Edge {
-	int end;
+class Data {
+	int vertex;
 	int weight;
 
-	Edge(int end, int weight) {
-		this.end = end;
+	Data(int vertex, int weight) {
+		this.vertex = vertex;
 		this.weight = weight;
 	}
 }
 
 public class Main {
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws Exception {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		StringBuilder sb = new StringBuilder();
 		StringTokenizer st;
 
 		int N, M;
-		int[][] map;
+		int[][] arr;
+
+		/////////////////////////////////////////////////////
 
 		st = new StringTokenizer(br.readLine());
 		N = Integer.parseInt(st.nextToken());
 		M = Integer.parseInt(st.nextToken());
-		map = new int[N][M];
+		arr = new int[N][M];
+
+		////////////////////////////////////////////////////
 
 		for (int i = 0; i < N; i++) {
 			st = new StringTokenizer(br.readLine());
 			for (int j = 0; j < M; j++) {
-				map[i][j] = Integer.parseInt(st.nextToken());
+				arr[i][j] = Integer.parseInt(st.nextToken());
 			}
 		}
 
-		//////////////////////////////////////////////////////////
+		/////////////////////////////////////////////////////
 
-		// 섬을 넘버링 하기
+		// 섬을 먼저 넘버링하자
 		int island_number = 0;
-		boolean[][] visited = new boolean[map.length][map[0].length];
-		for (int i = 0; i < map.length; i++) {
-			for (int j = 0; j < map[0].length; j++) {
-				if (!visited[i][j] && map[i][j] != 0) {
+		boolean[][] visited = new boolean[N][M];
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < M; j++) {
+				if (arr[i][j] == 1 && !visited[i][j]) {
 					island_number++;
-					dfs_numbering_island(map, visited, island_number, i, j);
+					dfs(arr, visited, i, j, island_number);
 				}
 			}
 		}
 
-		// 그래프 만들어!
-		ArrayList<ArrayList<Edge>> graph = new ArrayList<>();
-		for (int i = 0; i <= island_number; i++)
-			graph.add(new ArrayList<Edge>());
+//		for (int i = 0; i < N; i++) {
+//			for (int j = 0; j < M; j++) {
+//				System.out.print(arr[i][j] + " ");
+//			}
+//			System.out.println();
+//		}
 
-		for (int i = 0; i < map.length; i++) {
-			for (int j = 0; j < map[0].length; j++) {
-				if (map[i][j] != 0) {
+		int[][] graph = new int[island_number + 1][island_number + 1];
+		complete_graph(arr, graph);
 
-					// 위로 다리 무조건 그어
-					int length = -1;
-					for (int y = i - 1; y >= 0; y--) {
-						length++;
-						// 바다다
-						if (map[y][j] == 0)
-							continue;
-						// 내 섬이다 ㅋ?
-						if (map[y][j] == map[i][j])
-							break;
-						// 남의 섬이다!
-						else {
-							if (length == 1)
-								break;
-							else {
-								graph.get(map[i][j]).add(new Edge(map[y][j], length));
-								break;
-							}
-						}
-					}
+//		for (int i = 0; i < graph.length; i++) {
+//			for (int j = 0; j < graph[0].length; j++) {
+//				System.out.print(graph[i][j] + " ");
+//			}
+//			System.out.println();
+//		}
 
-					// 아래로 다리 무조건 그어
-					length = -1;
-					for (int y = i + 1; y < map.length; y++) {
-						length++;
-						// 바다다
-						if (map[y][j] == 0)
-							continue;
-						// 내 섬이다 ㅋ?
-						if (map[y][j] == map[i][j])
-							break;
-						// 남의 섬이다!
-						else {
-							if (length == 1)
-								break;
-							else {
-								graph.get(map[i][j]).add(new Edge(map[y][j], length));
-								break;
-							}
-						}
-					}
+		PriorityQueue<Data> pQ = new PriorityQueue<>(new Comparator<Data>() {
 
-					// 왼쪽으로 다리 무조건 그어
-					length = -1;
-					for (int x = j - 1; x >= 0; x--) {
-						length++;
-						// 바다다
-						if (map[i][x] == 0)
-							continue;
-						// 내 섬이다 ㅋ?
-						if (map[i][j] == map[i][x])
-							break;
-						// 남의 섬이다!
-						else {
-							if (length == 1)
-								break;
-							else {
-								graph.get(map[i][j]).add(new Edge(map[i][x], length));
-								break;
-							}
-						}
-					}
-
-					// 오른쪽으로 다리 무조건 그어
-					length = -1;
-					for (int x = j + 1; x < map[0].length; x++) {
-						length++;
-						// 바다다
-						if (map[i][x] == 0)
-							continue;
-						// 내 섬이다 ㅋ?
-						if (map[i][j] == map[i][x])
-							break;
-						// 남의 섬이다!
-						else {
-							if (length == 1)
-								break;
-							else {
-								graph.get(map[i][j]).add(new Edge(map[i][x], length));
-								break;
-							}
-						}
-					}
-				}
-			}
-		}
-
-		PriorityQueue<Edge> pQ = new PriorityQueue<>(new Comparator<Edge>() {
 			@Override
-			public int compare(Edge o1, Edge o2) {
+			public int compare(Data o1, Data o2) {
 				if (o1.weight > o2.weight)
 					return 1;
 				else if (o1.weight == o2.weight)
@@ -153,69 +79,180 @@ public class Main {
 					return -1;
 			}
 		});
+
 		boolean[] visited2 = new boolean[island_number + 1];
 
+		for (int i = 1; i <= island_number; i++) {
+			if (graph[1][i] != 0)
+				pQ.add(new Data(i, graph[1][i]));
+		}
+
 		visited2[1] = true;
-		for (Edge edge : graph.get(1))
-			pQ.add(edge);
 
 		int answer = 0;
+		int vertex_count = 1;
+
 		while (!pQ.isEmpty()) {
-			Edge tmp = pQ.remove();
-			if (!visited2[tmp.end]) {
-				visited2[tmp.end] = true;
-				answer += tmp.weight;
-				for (Edge edge : graph.get(tmp.end))
-					pQ.add(edge);
+			Data tmp = pQ.remove();
+
+			if (visited2[tmp.vertex])
+				continue;
+
+			visited2[tmp.vertex] = true;
+			vertex_count++;
+			answer += tmp.weight;
+
+			if (vertex_count == island_number)
+				break;
+
+			for (int i = 1; i <= island_number; i++) {
+				if (graph[tmp.vertex][i] != 0)
+					pQ.add(new Data(i, graph[tmp.vertex][i]));
 			}
 		}
-
-		boolean find = true;
-		for (int i = 1; i < visited2.length; i++) {
-			if (!visited2[i])
-				find = false;
-		}
-
-		if (find) {
+		if (vertex_count == island_number)
 			System.out.println(answer);
-		} else {
+		else
 			System.out.println("-1");
-		}
-
 	}
 
-	public static void dfs_numbering_island(int[][] map, boolean[][] visited, int island_number, int y, int x) {
-		visited[y][x] = true;
-		map[y][x] = island_number;
+	public static void dfs(int[][] arr, boolean[][] visited, int i, int j, int island_number) {
+		visited[i][j] = true;
+		arr[i][j] = island_number;
 
-		// 위
-		if (y - 1 >= 0 && !visited[y - 1][x] && map[y - 1][x] != 0) {
-			dfs_numbering_island(map, visited, island_number, y - 1, x);
+		if (i - 1 >= 0 && !visited[i - 1][j] && arr[i - 1][j] == 1) {
+			dfs(arr, visited, i - 1, j, island_number);
 		}
 
-		// 아래
-		if (y + 1 < map.length && !visited[y + 1][x] && map[y + 1][x] != 0) {
-			dfs_numbering_island(map, visited, island_number, y + 1, x);
+		if (i + 1 < arr.length && !visited[i + 1][j] && arr[i + 1][j] == 1) {
+			dfs(arr, visited, i + 1, j, island_number);
 		}
 
-		// 왼쪽
-		if (x - 1 >= 0 && !visited[y][x - 1] && map[y][x - 1] != 0) {
-			dfs_numbering_island(map, visited, island_number, y, x - 1);
+		if (j - 1 >= 0 && !visited[i][j - 1] && arr[i][j - 1] == 1) {
+			dfs(arr, visited, i, j - 1, island_number);
 		}
 
-		// 오른쪽
-		if (x + 1 < map[0].length && !visited[y][x + 1] && map[y][x + 1] != 0) {
-			dfs_numbering_island(map, visited, island_number, y, x + 1);
+		if (j + 1 < arr[0].length && !visited[i][j + 1] && arr[i][j + 1] == 1) {
+			dfs(arr, visited, i, j + 1, island_number);
 		}
-
 	}
 
-	public static void print_map(int[][] arr) {
+	public static void complete_graph(int[][] arr, int[][] graph) {
 		for (int i = 0; i < arr.length; i++) {
-			for (int j = 0; j < arr[0].length; j++)
-				System.out.print(arr[i][j] + " ");
-			System.out.println(" ");
+			for (int j = 0; j < arr[0].length; j++) {
+				if (arr[i][j] != 0) {
+					int my_island_number = arr[i][j];
+					int y, x, count;
+
+					// 왼쪽으로 가보자
+					y = i;
+					x = j - 1;
+					count = 0;
+					while (x >= 0) {
+						if (arr[y][x] == my_island_number)
+							break;
+						else if (arr[y][x] == 0) {
+							count++;
+							x--;
+						} else {
+							if (count >= 2) {
+								if (graph[my_island_number][arr[y][x]] == 0) {
+									graph[my_island_number][arr[y][x]] = count;
+									graph[arr[y][x]][my_island_number] = count;
+								} else {
+									graph[my_island_number][arr[y][x]] = Math.min(graph[my_island_number][arr[y][x]],
+											count);
+									graph[arr[y][x]][my_island_number] = Math.min(graph[arr[y][x]][my_island_number],
+											count);
+								}
+							}
+
+							break;
+						}
+					}
+
+					// 오른쪽으로 가보자
+					y = i;
+					x = j + 1;
+					count = 0;
+					while (x < arr[0].length) {
+						if (arr[y][x] == my_island_number)
+							break;
+						else if (arr[y][x] == 0) {
+							count++;
+							x++;
+						} else {
+							if (count >= 2) {
+								if (graph[my_island_number][arr[y][x]] == 0) {
+									graph[my_island_number][arr[y][x]] = count;
+									graph[arr[y][x]][my_island_number] = count;
+								} else {
+									graph[my_island_number][arr[y][x]] = Math.min(graph[my_island_number][arr[y][x]],
+											count);
+									graph[arr[y][x]][my_island_number] = Math.min(graph[arr[y][x]][my_island_number],
+											count);
+								}
+							}
+
+							break;
+						}
+					}
+
+					// 위쪽으로 가보자
+					y = i - 1;
+					x = j;
+					count = 0;
+					while (y >= 0) {
+						if (arr[y][x] == my_island_number)
+							break;
+						else if (arr[y][x] == 0) {
+							count++;
+							y--;
+						} else {
+							if (count >= 2) {
+								if (graph[my_island_number][arr[y][x]] == 0) {
+									graph[my_island_number][arr[y][x]] = count;
+									graph[arr[y][x]][my_island_number] = count;
+								} else {
+									graph[my_island_number][arr[y][x]] = Math.min(graph[my_island_number][arr[y][x]],
+											count);
+									graph[arr[y][x]][my_island_number] = Math.min(graph[arr[y][x]][my_island_number],
+											count);
+								}
+							}
+
+							break;
+						}
+					}
+
+					// 아래쪽으로 가보자
+					y = i + 1;
+					x = j;
+					count = 0;
+					while (y < arr.length) {
+						if (arr[y][x] == my_island_number)
+							break;
+						else if (arr[y][x] == 0) {
+							count++;
+							y++;
+						} else {
+							if (count >= 2) {
+								if (graph[my_island_number][arr[y][x]] == 0) {
+									graph[my_island_number][arr[y][x]] = count;
+									graph[arr[y][x]][my_island_number] = count;
+								} else {
+									graph[my_island_number][arr[y][x]] = Math.min(graph[my_island_number][arr[y][x]],
+											count);
+									graph[arr[y][x]][my_island_number] = Math.min(graph[arr[y][x]][my_island_number],
+											count);
+								}
+							}
+
+							break;
+						}
+					}
+				}
+			}
 		}
 	}
-
 }
