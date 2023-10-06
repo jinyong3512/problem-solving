@@ -1,37 +1,38 @@
 import java.io.*;
 import java.util.*;
+import java.util.Map.Entry;
 
-class Main {
-	public static void main(String[] args) throws IOException {
+public class Main {
+
+	public static void main(String[] args) throws NumberFormatException, IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		StringTokenizer st = new StringTokenizer(br.readLine().trim());
 		StringBuilder sb = new StringBuilder();
-		StringTokenizer st;
-
-		int N, M;
-
-		st = new StringTokenizer(br.readLine());
-		N = Integer.parseInt(st.nextToken());
-		M = Integer.parseInt(st.nextToken());
-
-		///////////////////////////////////////
-
-		HashMap<String, Integer> hashMap = new HashMap<>();
-		for (int i = 0; i < N + M; i++) {
-			String input_line = br.readLine();
-			hashMap.put(input_line, hashMap.getOrDefault(input_line, 0) + 1);
+		TreeMap<String, Boolean> map = new TreeMap<>();
+		int N = Integer.parseInt(st.nextToken());
+		int M = Integer.parseInt(st.nextToken());
+		for (int i = 0; i < N; i++) {
+			map.put(br.readLine().trim(), false);
 		}
+		int cnt = 0;
 
-		ArrayList<String> arrayList = new ArrayList<>();
-
-		for (String key : hashMap.keySet()) {
-			if(hashMap.get(key)==2)
-				arrayList.add(key);
+		for (int i = 0; i < M; i++) {
+			String s = br.readLine().trim();
+			if (map.get(s) != null) {
+				map.put(s, true);
+				cnt++;
+			}
 		}
-		
-		Collections.sort(arrayList);
-		
-		System.out.println(arrayList.size());
-		for(String str : arrayList)
-			System.out.println(str);
+		for (Entry<String, Boolean> entry : map.entrySet()) { // 저장된 key값 확인
+			if (entry.getValue()) {
+				sb.append(entry.getKey()).append("\n");
+			}
+
+		}
+		System.out.println(cnt);
+
+		System.out.println(sb);
+
 	}
+
 }
