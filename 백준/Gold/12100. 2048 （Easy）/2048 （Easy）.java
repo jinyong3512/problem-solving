@@ -76,6 +76,7 @@ class Main {
 
                     if (sub_i == arr.length) {
                         new_arr[new_arr_i][j] = arr[i][j];
+                        break;
                     }
                 }
             }
@@ -107,6 +108,7 @@ class Main {
                     }
                     if (sub_i == -1) {
                         new_arr[new_arr_i][j] = arr[i][j];
+                        break;
                     }
                 }
 
@@ -138,8 +140,10 @@ class Main {
                         }
                     }
 
-                    if (sub_j == arr[0].length)
+                    if (sub_j == arr[0].length) {
                         new_arr[i][new_arr_j] = arr[i][j];
+                        break;
+                    }
 
                 }
             }
@@ -149,9 +153,7 @@ class Main {
 
         // TODO : new_arr 오른쪽으로 가기 먹이기
         new_arr = new int[arr.length][arr[0].length];
-        for (
-                int i = 0;
-                i < arr.length; i++) {
+        for (int i = 0; i < arr.length; i++) {
             int new_arr_j = arr[0].length - 1;
             for (int j = arr[0].length - 1; j >= 0; j--) {
                 if (arr[i][j] != 0) {
@@ -171,8 +173,10 @@ class Main {
                             break;
                         }
                     }
-                    if(sub_j == -1)
+                    if (sub_j == -1) {
                         new_arr[i][new_arr_j] = arr[i][j];
+                        break;
+                    }
 
                 }
             }
