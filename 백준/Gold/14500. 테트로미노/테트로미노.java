@@ -46,16 +46,14 @@ class Main {
 
         ///////////////////////////////////////////////////////////////////////////////////////
 
-
-
         boolean[][] visited = new boolean[arr.length][arr[0].length];
+
         for (int i = 0; i < arr.length; i++) {
             for (int j = 0; j < arr[0].length; j++) {
 
                 visited[i][j] = true;
                 recursion(arr, visited, i, j, arr[i][j], 1);
                 visited[i][j] = false;
-
             }
         }
 
@@ -64,10 +62,6 @@ class Main {
 
     public static void recursion(int[][] arr, boolean[][] visited, int i, int j, int sum, int depth) {
 
-//        if(table[i][j][depth] > sum)
-//            return;
-//
-//        table[i][j][depth] = sum;
 
         if (depth == 4) {
             answer = Math.max(answer, sum);
@@ -78,6 +72,7 @@ class Main {
             // 위 왼쪽
             if (i - 1 >= 0 && j - 1 >= 0 && !visited[i - 1][j] && !visited[i][j - 1])
                 answer = Math.max(answer, sum + arr[i - 1][j] + arr[i][j - 1]);
+
 
             // 위 아래
             if (i - 1 >= 0 && i + 1 < arr.length && !visited[i - 1][j] && !visited[i + 1][j])
