@@ -22,11 +22,6 @@ class Main {
         StringBuilder sb = new StringBuilder();
         StringTokenizer st;
 
-        // TODO : 문제 설명이 어렵지 테르토미노 : 정사각형 4개로 만들 수 있는 모든 도형을 말한다.
-        // 하나만 놓으니까 결국 4방향 탐색하는 문제 아님?
-        // 백트래킹 적용 가능? 흠 힘들것 같은데 모두 다 가봐야 알것같은 기분이야
-        // 해당 점에 같은 기회로 더 낮은 점수로 도착했다? 이건 짤이지
-
         int N, M;
         int[][] arr;
 
@@ -69,9 +64,9 @@ class Main {
         }
 
         if (depth == 2) {
-            // 위 왼쪽
-            if (i - 1 >= 0 && j - 1 >= 0 && !visited[i - 1][j] && !visited[i][j - 1])
-                answer = Math.max(answer, sum + arr[i - 1][j] + arr[i][j - 1]);
+//            // 위 왼쪽
+//            if (i - 1 >= 0 && j - 1 >= 0 && !visited[i - 1][j] && !visited[i][j - 1])
+//                answer = Math.max(answer, sum + arr[i - 1][j] + arr[i][j - 1]);
 
 
             // 위 아래
@@ -108,12 +103,12 @@ class Main {
             visited[i + 1][j] = false;
         }
 
-        if (j - 1 >= 0 && !visited[i][j - 1]) {
-            visited[i][j - 1] = true;
-            recursion(arr, visited, i, j - 1, sum + arr[i][j - 1], depth + 1);
-            visited[i][j - 1] = false;
-
-        }
+//        if (j - 1 >= 0 && !visited[i][j - 1]) {
+//            visited[i][j - 1] = true;
+//            recursion(arr, visited, i, j - 1, sum + arr[i][j - 1], depth + 1);
+//            visited[i][j - 1] = false;
+//
+//        }
 
         if (j + 1 < arr[0].length && !visited[i][j + 1]) {
             visited[i][j + 1] = true;
