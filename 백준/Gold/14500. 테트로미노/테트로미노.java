@@ -77,13 +77,13 @@ class Main {
             if (i - 1 >= 0 && j + 1 < arr[0].length && !visited[i - 1][j] && !visited[i][j + 1])
                 answer = Math.max(answer, sum + arr[i - 1][j] + arr[i][j + 1]);
 
-            // 왼쪽 아래
-            if (j - 1 >= 0 && i + 1 < arr.length && !visited[i][j - 1] && !visited[i + 1][j])
-                answer = Math.max(answer, sum + arr[i][j - 1] + arr[i + 1][j]);
-
-            // 왼쪽 오른쪽
-            if (j - 1 >= 0 && j + 1 < arr[0].length && !visited[i][j - 1] && !visited[i][j + 1])
-                answer = Math.max(answer, sum + arr[i][j - 1] + arr[i][j + 1]);
+//            // 왼쪽 아래
+//            if (j - 1 >= 0 && i + 1 < arr.length && !visited[i][j - 1] && !visited[i + 1][j])
+//                answer = Math.max(answer, sum + arr[i][j - 1] + arr[i + 1][j]);
+//
+//            // 왼쪽 오른쪽
+//            if (j - 1 >= 0 && j + 1 < arr[0].length && !visited[i][j - 1] && !visited[i][j + 1])
+//                answer = Math.max(answer, sum + arr[i][j - 1] + arr[i][j + 1]);
 
             // 아래 오른쪽
             if (i + 1 < arr.length && j + 1 < arr[0].length && !visited[i + 1][j] && !visited[i][j + 1])
