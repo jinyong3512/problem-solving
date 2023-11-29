@@ -1,210 +1,185 @@
 import java.io.*;
 import java.util.*;
 
-public class Main {
+class Main {
 
-	public static int answer = 0;
+    public static int answer = Integer.MIN_VALUE;
 
-	public static void main(String[] args) throws IOException {
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		StringBuilder sb = new StringBuilder();
-		StringTokenizer st;
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringBuilder sb = new StringBuilder();
+        StringTokenizer st;
 
-		int N;
-		int[][] arr;
+        int N;
+        int[][] arr;
 
-		N = Integer.parseInt(br.readLine());
-		arr = new int[N][N];
+        //////////////////////////////////////////////////////////////////////////////////////////////////////
 
-		for (int i = 0; i < N; i++) {
-			st = new StringTokenizer(br.readLine());
-			for (int j = 0; j < N; j++) {
-				arr[i][j] = Integer.parseInt(st.nextToken());
-			}
-		}
+        N = Integer.parseInt(br.readLine());
+        arr = new int[N][N];
 
-		////////////////////////////////////////
-		recursion(arr, 0, 0);
+        for (int i = 0; i < N; i++) {
+            st = new StringTokenizer(br.readLine());
+            for (int j = 0; j < N; j++) {
+                arr[i][j] = Integer.parseInt(st.nextToken());
+            }
+        }
 
-		System.out.println(answer);
-	}
+        //////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	public static void recursion(int[][] arr, int depth, int direction) {
+        // 4방향 모두 검사 해야 한다 5번까지 한 뒤에 최댓 값 구하기
+        recursion(arr, 0);
 
-		if (depth == 6) {
-			int max = Integer.MIN_VALUE;
-			for (int i = 0; i < arr.length; i++) {
-				for (int j = 0; j < arr[0].length; j++) {
-					max = Math.max(max, arr[i][j]);
-				}
-			}
-			answer = Math.max(answer, max);
-			return;
-		}
+        sb.append(answer);
+        System.out.println(sb);
+    }
 
-		// 복사하기
-		int[][] new_arr = new int[arr.length][arr[0].length];
-		for (int i = 0; i < arr.length; i++) {
-			for (int j = 0; j < arr[0].length; j++) {
-				new_arr[i][j] = arr[i][j];
-			}
-		}
+    public static void recursion(int[][] arr, int depth) {
 
-		// 위로
-		if (direction == 1) {
+        if (depth == 5) {
+            int max = 0;
+            for (int i = 0; i < arr.length; i++) {
+                for (int j = 0; j < arr[0].length; j++) {
+                    max = Math.max(max, arr[i][j]);
+                }
+            }
+            answer = Math.max(answer, max);
+            return;
+        }
 
-			// 모으기
-			for (int j = 0; j < new_arr[0].length; j++) {
-				for (int i = 0; i < new_arr.length; i++) {
-					if (new_arr[i][j] != 0) {
-						for (int y = 0; y < i; y++) {
-							if (new_arr[y][j] == 0) {
-								int tmp = new_arr[i][j];
-								new_arr[i][j] = new_arr[y][j];
-								new_arr[y][j] = tmp;
-								break;
-							}
-						}
-					}
-				}
-			}
+        int[][] new_arr;
 
-			// 합치기
-			for (int j = 0; j < new_arr[0].length; j++) {
-				for (int i = 0; i < new_arr.length - 1; i++) {
-					if (new_arr[i][j] == new_arr[i + 1][j]) {
-						new_arr[i][j] *= 2;
+        // 그걸 잘 못 생각 했다 중간에 0이 있어도 죽는구나
 
-						for (int y = i + 2; y < new_arr.length; y++) {
-							new_arr[y - 1][j] = new_arr[y][j];
-						}
-						new_arr[new_arr.length - 1][j] = 0;
+        // TODO : new_arr 위로 가기 먹이기
+        new_arr = new int[arr.length][arr[0].length];
+        for (int j = 0; j < arr[0].length; j++) {
+            int new_arr_i = 0;
+            for (int i = 0; i < arr.length; i++) {
+                if (arr[i][j] != 0) {
+                    int sub_i = i + 1;
+                    for (; sub_i < arr.length; sub_i++) {
+                        if (arr[sub_i][j] == 0) {
 
-					}
+                        } else if (arr[sub_i][j] == arr[i][j]) {
+                            new_arr[new_arr_i][j] = arr[i][j] * 2;
+                            new_arr_i++;
+                            i = sub_i;
+                            break;
+                        } else {
+                            new_arr[new_arr_i][j] = arr[i][j];
+                            new_arr_i++;
+                            i = sub_i - 1;
+                            break;
+                        }
+                    }
 
-				}
-			}
+                    if (sub_i == arr.length) {
+                        new_arr[new_arr_i][j] = arr[i][j];
+                    }
+                }
+            }
+        }
 
-		}
-		// 오른쪽
-		else if (direction == 2) {
+        recursion(new_arr, depth + 1);
 
-			// 모으기
-			for (int i = 0; i < new_arr.length; i++) {
-				for (int j = new_arr[0].length - 1; j >= 0; j--) {
-					if (new_arr[i][j] != 0) {
-						for (int x = new_arr[0].length - 1; x > j; x--) {
-							if (new_arr[i][x] == 0) {
-								int tmp = new_arr[i][x];
-								new_arr[i][x] = new_arr[i][j];
-								new_arr[i][j] = tmp;
-								break;
-							}
-						}
-					}
-				}
-			}
+        // TODO : new_arr 아래로 가기 먹이기
+        new_arr = new int[arr.length][arr[0].length];
+        for (int j = 0; j < arr[0].length; j++) {
+            int new_arr_i = arr.length - 1;
+            for (int i = arr.length - 1; i >= 0; i--) {
+                if (arr[i][j] != 0) {
+                    int sub_i = i - 1;
+                    for (; sub_i >= 0; sub_i--) {
+                        if (arr[sub_i][j] == 0) {
 
-			// 합치기
-			for (int i = 0; i < new_arr.length; i++) {
-				for (int j = new_arr[0].length - 1; j > 0; j--) {
-					if (new_arr[i][j] == new_arr[i][j - 1]) {
-						new_arr[i][j] *= 2;
+                        } else if (arr[sub_i][j] == arr[i][j]) {
+                            new_arr[new_arr_i][j] = arr[i][j] * 2;
+                            new_arr_i--;
+                            i = sub_i;
+                            break;
+                        } else {
+                            new_arr[new_arr_i][j] = arr[i][j];
+                            new_arr_i--;
+                            i = sub_i + 1;
+                            break;
+                        }
+                    }
+                    if (sub_i == -1) {
+                        new_arr[new_arr_i][j] = arr[i][j];
+                    }
+                }
 
-						for (int x = j - 2; x >= 0; x--) {
-							new_arr[i][x + 1] = new_arr[i][x];
-						}
+            }
+        }
 
-						new_arr[i][0] = 0;
-					}
-				}
-			}
+        recursion(new_arr, depth + 1);
 
-		}
-		// 아래
-		else if (direction == 3) {
-			// 모으기
-			for (int j = 0; j < new_arr[0].length; j++) {
-				for (int i = new_arr.length - 1; i >= 0; i--) {
-					if (new_arr[i][j] != 0) {
-						for (int y = new_arr.length - 1; y >= i + 1; y--) {
-							if (new_arr[y][j] == 0) {
-								int tmp = new_arr[i][j];
-								new_arr[i][j] = new_arr[y][j];
-								new_arr[y][j] = tmp;
-								break;
-							}
-						}
-					}
-				}
-			}
+        // TODO : new_arr 왼쪽으로 가기 먹이기
+        new_arr = new int[arr.length][arr[0].length];
+        for (int i = 0; i < arr.length; i++) {
+            int new_arr_j = 0;
+            for (int j = 0; j < arr[0].length; j++) {
+                if (arr[i][j] != 0) {
+                    int sub_j = j + 1;
+                    for (; sub_j < arr[0].length; sub_j++) {
+                        if (arr[i][sub_j] == 0) {
 
-			// 합치기
-			for (int j = 0; j < new_arr[0].length; j++) {
-				for (int i = new_arr.length - 1; i > 0; i--) {
-					if (new_arr[i][j] == new_arr[i - 1][j]) {
-						new_arr[i][j] *= 2;
+                        } else if (arr[i][sub_j] == arr[i][j]) {
+                            new_arr[i][new_arr_j] = arr[i][j] * 2;
+                            new_arr_j++;
+                            j = sub_j;
+                            break;
+                        } else {
+                            new_arr[i][new_arr_j] = arr[i][j];
+                            new_arr_j++;
+                            j = sub_j - 1;
+                            break;
+                        }
+                    }
 
-						for (int y = i - 2; y >= 0; y--) {
-							new_arr[y + 1][j] = new_arr[y][j];
-						}
-						new_arr[0][j] = 0;
+                    if (sub_j == arr[0].length)
+                        new_arr[i][new_arr_j] = arr[i][j];
 
-					}
+                }
+            }
+        }
 
-				}
-			}
-		}
-		// 왼쪽
-		else if (direction == 4) {
-			// 모으기
-			for (int i = 0; i < new_arr.length; i++) {
-				for (int j = 0; j < new_arr[0].length; j++) {
-					if (new_arr[i][j] != 0) {
-						for (int x = 0; x < j; x++) {
-							if (new_arr[i][x] == 0) {
-								int tmp = new_arr[i][x];
-								new_arr[i][x] = new_arr[i][j];
-								new_arr[i][j] = tmp;
-								break;
-							}
-						}
-					}
-				}
-			}
+        recursion(new_arr, depth + 1);
 
-			// 합치기
-			for (int i = 0; i < new_arr.length; i++) {
-				for (int j = 0; j < new_arr[0].length - 1; j++) {
-					if (new_arr[i][j] == new_arr[i][j + 1]) {
-						new_arr[i][j] *= 2;
+        // TODO : new_arr 오른쪽으로 가기 먹이기
+        new_arr = new int[arr.length][arr[0].length];
+        for (
+                int i = 0;
+                i < arr.length; i++) {
+            int new_arr_j = arr[0].length - 1;
+            for (int j = arr[0].length - 1; j >= 0; j--) {
+                if (arr[i][j] != 0) {
+                    int sub_j = j - 1;
+                    for (; sub_j >= 0; sub_j--) {
+                        if (arr[i][sub_j] == 0) {
 
-						for (int x = j + 2; x < new_arr[0].length; x++) {
-							new_arr[i][x - 1] = new_arr[i][x];
-						}
+                        } else if (arr[i][sub_j] == arr[i][j]) {
+                            new_arr[i][new_arr_j] = arr[i][j] * 2;
+                            new_arr_j--;
+                            j = sub_j;
+                            break;
+                        } else {
+                            new_arr[i][new_arr_j] = arr[i][j];
+                            new_arr_j--;
+                            j = sub_j + 1;
+                            break;
+                        }
+                    }
+                    if(sub_j == -1)
+                        new_arr[i][new_arr_j] = arr[i][j];
 
-						new_arr[i][new_arr[0].length - 1] = 0;
-					}
-				}
-			}
-		}
+                }
+            }
+        }
 
-//		if (depth == 1) {
-//			System.out.println("direction = " + direction);
-//			for (int i = 0; i < arr.length; i++) {
-//				for (int j = 0; j < arr[0].length; j++) {
-//					System.out.print(new_arr[i][j] + " ");
-//				}
-//				System.out.println("");
-//			}
-//			System.out.println("");
-//			System.out.println("");
-//		}
+        recursion(new_arr, depth + 1);
 
-		recursion(new_arr, depth + 1, 1);
-		recursion(new_arr, depth + 1, 2);
-		recursion(new_arr, depth + 1, 3);
-		recursion(new_arr, depth + 1, 4);
 
-	}
+    }
 }
