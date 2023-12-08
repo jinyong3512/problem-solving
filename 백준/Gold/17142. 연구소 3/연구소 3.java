@@ -86,12 +86,21 @@ public class Main {
             visited[data.y][data.x] = true;
         }
 
-        ArrayList<Data> arrayList = new ArrayList<>();
+        int zeroCount = 0;
+        for (int i = 0; i < arr.length; i++) {
+            for (int j = 0; j < arr[0].length; j++) {
+                if (arr[i][j] == 0)
+                    zeroCount++;
+            }
+        }
+
+        if (zeroCount == 0) {
+            answer = 0;
+            return;
+        }
 
         while (!deque.isEmpty()) {
             Data tmpData = deque.removeFirst();
-
-            arrayList.add(tmpData);
 
             for (int direction = 0; direction < 4; direction++) {
                 int newY = tmpData.y + dy[direction];
@@ -101,6 +110,7 @@ public class Main {
 
                     if (arr[newY][newX] == 0 && !visited[newY][newX]) {
                         visited[newY][newX] = true;
+                        zeroCount--;
                         deque.add(new Data(newY, newX, tmpData.depth + 1));
                     } else if (arr[newY][newX] == 2 && !visited[newY][newX]) {
                         visited[newY][newX] = true;
@@ -108,17 +118,10 @@ public class Main {
                     }
                 }
             }
-        }
 
-        if (!checkEmpty(arr, visited)) {
-            int depth = 0;
-            for (Data data : arrayList) {
-                if (arr[data.y][data.x] == 0) {
-                    depth = data.depth;
-                }
+            if (zeroCount == 0) {
+                answer = Math.min(answer, tmpData.depth + 1);
             }
-
-            answer = Math.min(answer, depth);
         }
 
     }
