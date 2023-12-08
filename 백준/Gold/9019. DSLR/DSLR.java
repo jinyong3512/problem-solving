@@ -44,7 +44,7 @@ public class Main {
 
                 if (tmp.number == B) {
                     // TODO : sb에 담기!!
-                    
+
                     StringBuilder sb2 = new StringBuilder();
 
                     for (int i = 0; i < tmp.depth; i++) {
@@ -61,7 +61,7 @@ public class Main {
 
                         tmp.order /= 4;
                     }
-                    
+
                     sb.append(sb2.reverse()).append("\n");
 
                     break;
@@ -85,24 +85,28 @@ public class Main {
                 }
 
                 // L 연산
-                String L = String.valueOf(tmp.number);
-                while (L.length() < 4) {
-                    L = "0" + L;
-                }
-                L = L.substring(1) + L.charAt(0);
-                int l = Integer.parseInt(L);
+//                String L = String.valueOf(tmp.number);
+//                while (L.length() < 4) {
+//                    L = "0" + L;
+//                }
+//                L = L.substring(1) + L.charAt(0);
+//                int l = Integer.parseInt(L);
+
+                int l = (tmp.number % 1000) * 10 + tmp.number / 1000;
                 if (!visited[l]) {
                     visited[l] = true;
                     queue.add(new Data(l, tmp.order * 4 + 2, tmp.depth + 1));
                 }
 
                 // R 연산
-                String R = String.valueOf(tmp.number);
-                while (R.length() < 4) {
-                    R = "0" + R;
-                }
-                R = R.charAt(R.length() - 1) + R.substring(0, R.length() - 1);
-                int r = Integer.parseInt(R);
+//                String R = String.valueOf(tmp.number);
+//                while (R.length() < 4) {
+//                    R = "0" + R;
+//                }
+//                R = R.charAt(R.length() - 1) + R.substring(0, R.length() - 1);
+//                int r = Integer.parseInt(R);
+
+                int r = (tmp.number % 10) * 1000 + tmp.number / 10;
                 if (!visited[r]) {
                     visited[r] = true;
                     queue.add(new Data(r, tmp.order * 4 + 3, tmp.depth + 1));
