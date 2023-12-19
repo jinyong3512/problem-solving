@@ -1,156 +1,114 @@
-import java.util.*; // 유틸 라이브러리 임포트
-import java.io.*; // 입출력 라이브러리 임포트
+import java.io.*;
+import java.util.*;
 
 class Point {
-	int y, x;
-	int depth;
-	int spare_jump;
+    int y, x, lastChance, depth;
 
-	Point(int y, int x, int depth, int spare_jump) {
-		this.y = y;
-		this.x = x;
-		this.depth = depth;
-		this.spare_jump = spare_jump;
-	}
+    Point(int y, int x, int lastChance, int depth) {
+        this.y = y;
+        this.x = x;
+        this.lastChance = lastChance;
+        this.depth = depth;
+    }
 }
 
-public class Main { // 메인 클래스
-	public static void main(String[] args) throws IOException { // 메인 클래스 실행
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in)); // 입력 받는 라이브러리 객체 생성 초기화
-		StringBuilder sb = new StringBuilder(); // 출력 하는 라이브러리 객체 생성 초기화
-		StringTokenizer st; // 끊어 읽는 용도 라이브러리 객체 생성
+public class Main {
 
-		int K;
-		int W, H;
-		boolean[][] arr;
+    public static int[] dy = new int[]{-1, 1, 0, 0};
+    public static int[] dx = new int[]{0, 0, -1, 1};
 
-		K = Integer.parseInt(br.readLine());
+    public static int[] dy2 = new int[]{-1, -2, -2, -1, 1, 2, 2, 1};
+    public static int[] dx2 = new int[]{-2, -1, 1, 2, 2, 1, -1, -2};
 
-		st = new StringTokenizer(br.readLine());
-		W = Integer.parseInt(st.nextToken());
-		H = Integer.parseInt(st.nextToken());
-		arr = new boolean[H][W];
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringBuilder sb = new StringBuilder();
+        StringTokenizer st;
 
-		for (int i = 0; i < H; i++) {
-			st = new StringTokenizer(br.readLine());
-			for (int j = 0; j < W; j++) {
-				if (st.nextToken().equals("1"))
-					arr[i][j] = true;
-			}
-		}
+        int K;
+        int W, H;
+        int[][] arr;
 
-		///////////////////////////////////////////////////
+        K = Integer.parseInt(br.readLine());
 
-		Queue<Point> queue = new LinkedList<>();
-		int[][] spare_jump_section = new int[arr.length][arr[0].length];
+        st = new StringTokenizer(br.readLine());
+        W = Integer.parseInt(st.nextToken());
+        H = Integer.parseInt(st.nextToken());
+        arr = new int[H][W];
 
-		for (int i = 0; i < spare_jump_section.length; i++) {
-			for (int j = 0; j < spare_jump_section[0].length; j++)
-				spare_jump_section[i][j] = -1;
-		}
+        for (int i = 0; i < H; i++) {
+            st = new StringTokenizer(br.readLine());
+            for (int j = 0; j < W; j++) {
+                arr[i][j] = Integer.parseInt(st.nextToken());
+            }
+        }
 
-		Point start = new Point(0, 0, 0, K);
-		if (start.spare_jump > spare_jump_section[0][0]) {
-			spare_jump_section[0][0] = start.spare_jump;
-			queue.add(new Point(0, 0, 0, K));
-		}
+        ////////////////////////////////////////////////////////////////////////
 
-		while (!queue.isEmpty()) {
-			Point tmp = queue.remove();
+        // 같은 지점에 lastChance가 더 큰 애가 오면 queue에 넣는 작전을 쓰는거야 몸이 기억하고 있음
 
-			if (tmp.y == arr.length - 1 && tmp.x == arr[0].length - 1) {
-				sb.append(tmp.depth);
-				break;
-			}
+        int[][] maxLastChance = new int[H][W];
+        for (int i = 0; i < H; i++) {
+            for (int j = 0; j < W; j++) {
+                maxLastChance[i][j] = -1;
+            }
+        }
 
-			// 위로
-			if (tmp.y - 1 >= 0 && tmp.spare_jump > spare_jump_section[tmp.y - 1][tmp.x] && !arr[tmp.y - 1][tmp.x]) {
-				spare_jump_section[tmp.y - 1][tmp.x] = tmp.spare_jump;
-				queue.add(new Point(tmp.y - 1, tmp.x, tmp.depth + 1, tmp.spare_jump));
-			}
+        Queue<Point> queue = new LinkedList<>();
+        maxLastChance[0][0] = K;
+        queue.add(new Point(0, 0, K, 0));
 
-			// 아래로
-			if (tmp.y + 1 < arr.length && tmp.spare_jump > spare_jump_section[tmp.y + 1][tmp.x]
-					&& !arr[tmp.y + 1][tmp.x]) {
-				spare_jump_section[tmp.y + 1][tmp.x] = tmp.spare_jump;
-				queue.add(new Point(tmp.y + 1, tmp.x, tmp.depth + 1, tmp.spare_jump));
-			}
+        while (!queue.isEmpty()) {
+            Point point = queue.remove();
 
-			// 오른쪽
-			if (tmp.x + 1 < arr[0].length && tmp.spare_jump > spare_jump_section[tmp.y][tmp.x + 1]
-					&& !arr[tmp.y][tmp.x + 1]) {
-				spare_jump_section[tmp.y][tmp.x + 1] = tmp.spare_jump;
-				queue.add(new Point(tmp.y, tmp.x + 1, tmp.depth + 1, tmp.spare_jump));
-			}
+            if (point.y == H - 1 && point.x == W - 1) {
+                sb.append(point.depth);
+                break;
+            }
 
-			// 왼쪽
-			if (tmp.x - 1 >= 0 && tmp.spare_jump > spare_jump_section[tmp.y][tmp.x - 1] && !arr[tmp.y][tmp.x - 1]) {
-				spare_jump_section[tmp.y][tmp.x - 1] = tmp.spare_jump;
-				queue.add(new Point(tmp.y, tmp.x - 1, tmp.depth + 1, tmp.spare_jump));
-			}
+            // 점프 가능! 그래서 점프 하기
+            if (point.lastChance != 0) {
+                for (int direction = 0; direction < 8; direction++) {
+                    int newY = point.y + dy2[direction];
+                    int newX = point.x + dx2[direction];
 
-			// 1
-			if (tmp.y - 2 >= 0 && tmp.x + 1 < arr[0].length
-					&& tmp.spare_jump - 1 > spare_jump_section[tmp.y - 2][tmp.x + 1] && !arr[tmp.y - 2][tmp.x + 1]) {
-				spare_jump_section[tmp.y - 2][tmp.x + 1] = tmp.spare_jump - 1;
-				queue.add(new Point(tmp.y - 2, tmp.x + 1, tmp.depth + 1, tmp.spare_jump - 1));
-			}
+                    if (newY < 0 || newY >= arr.length || newX < 0 || newX >= arr[0].length)
+                        continue;
 
-			// 2
-			if (tmp.y - 1 >= 0 && tmp.x + 2 < arr[0].length
-					&& tmp.spare_jump - 1 > spare_jump_section[tmp.y - 1][tmp.x + 2] && !arr[tmp.y - 1][tmp.x + 2]) {
-				spare_jump_section[tmp.y - 1][tmp.x + 2] = tmp.spare_jump - 1;
-				queue.add(new Point(tmp.y - 1, tmp.x + 2, tmp.depth + 1, tmp.spare_jump - 1));
-			}
+                    if (arr[newY][newX] == 1)
+                        continue;
 
-			// 3
-			if (tmp.y + 1 < arr.length && tmp.x + 2 < arr[0].length
-					&& tmp.spare_jump - 1 > spare_jump_section[tmp.y + 1][tmp.x + 2] && !arr[tmp.y + 1][tmp.x + 2]) {
-				spare_jump_section[tmp.y + 1][tmp.x + 2] = tmp.spare_jump - 1;
-				queue.add(new Point(tmp.y + 1, tmp.x + 2, tmp.depth + 1, tmp.spare_jump - 1));
-			}
+                    if (maxLastChance[newY][newX] < point.lastChance - 1) {
+                        maxLastChance[newY][newX] = point.lastChance - 1;
+                        queue.add(new Point(newY, newX, point.lastChance - 1, point.depth + 1));
+                    }
+                }
+            }
 
-			// 4
-			if (tmp.y + 2 < arr.length && tmp.x + 1 < arr[0].length
-					&& tmp.spare_jump - 1 > spare_jump_section[tmp.y + 2][tmp.x + 1] && !arr[tmp.y + 2][tmp.x + 1]) {
-				spare_jump_section[tmp.y + 2][tmp.x + 1] = tmp.spare_jump - 1;
-				queue.add(new Point(tmp.y + 2, tmp.x + 1, tmp.depth + 1, tmp.spare_jump - 1));
-			}
+            // 점프 안할래
+            for (int direction = 0; direction < 4; direction++) {
+                int newY = point.y + dy[direction];
+                int newX = point.x + dx[direction];
 
-			// 5
-			if (tmp.y + 2 < arr.length && tmp.x - 1 >= 0
-					&& tmp.spare_jump - 1 > spare_jump_section[tmp.y + 2][tmp.x - 1] && !arr[tmp.y + 2][tmp.x - 1]) {
-				spare_jump_section[tmp.y + 2][tmp.x - 1] = tmp.spare_jump - 1;
-				queue.add(new Point(tmp.y + 2, tmp.x - 1, tmp.depth + 1, tmp.spare_jump - 1));
-			}
+                if (newY < 0 || newY >= arr.length || newX < 0 || newX >= arr[0].length)
+                    continue;
 
-			// 6
-			if (tmp.y + 1 < arr.length && tmp.x - 2 >= 0
-					&& tmp.spare_jump - 1 > spare_jump_section[tmp.y + 1][tmp.x - 2] && !arr[tmp.y + 1][tmp.x - 2]) {
-				spare_jump_section[tmp.y + 1][tmp.x - 2] = tmp.spare_jump - 1;
-				queue.add(new Point(tmp.y + 1, tmp.x - 2, tmp.depth + 1, tmp.spare_jump - 1));
-			}
+                if (arr[newY][newX] == 1)
+                    continue;
 
-			// 7
-			if (tmp.y - 1 >= 0 && tmp.x - 2 >= 0 && tmp.spare_jump - 1 > spare_jump_section[tmp.y - 1][tmp.x - 2]
-					&& !arr[tmp.y - 1][tmp.x - 2]) {
-				spare_jump_section[tmp.y - 1][tmp.x - 2] = tmp.spare_jump - 1;
-				queue.add(new Point(tmp.y - 1, tmp.x - 2, tmp.depth + 1, tmp.spare_jump - 1));
-			}
+                if (maxLastChance[newY][newX] < point.lastChance) {
+                    maxLastChance[newY][newX] = point.lastChance;
+                    queue.add(new Point(newY, newX, point.lastChance, point.depth + 1));
+                }
+            }
 
-			// 8
-			if (tmp.y - 2 >= 0 && tmp.x - 1 >= 0 && tmp.spare_jump - 1 > spare_jump_section[tmp.y - 2][tmp.x - 1]
-					&& !arr[tmp.y - 2][tmp.x - 1]) {
-				spare_jump_section[tmp.y - 2][tmp.x - 1] = tmp.spare_jump - 1;
-				queue.add(new Point(tmp.y - 2, tmp.x - 1, tmp.depth + 1, tmp.spare_jump - 1));
-			}
 
-		}
+        }
 
-		if (sb.length() == 0)
-			System.out.println("-1");
-		else
-			System.out.println(sb);
+        if (sb.length() == 0)
+            sb.append("-1");
 
-	}
+        System.out.println(sb);
+
+    }
 }
