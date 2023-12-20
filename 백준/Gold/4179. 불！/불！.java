@@ -1,152 +1,148 @@
-import java.util.*;
 import java.io.*;
+import java.util.*;
 
-class Data {
-	int i;
-	int j;
-	int time;
+class Point {
+    int y, x, depth;
 
-	Data(int i, int j, int time) {
-		this.i = i;
-		this.j = j;
-		this.time = time;
-	}
+    Point(int y, int x, int depth) {
+        this.y = y;
+        this.x = x;
+        this.depth = depth;
+    }
 }
 
 public class Main {
-	public static void main(String[] args) throws IOException {
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		StringBuilder sb = new StringBuilder();
-		StringTokenizer st;
 
-		int R, C;
-		char[][] arr;
+    public static int[] dy = new int[]{-1, 1, 0, 0};
+    public static int[] dx = new int[]{0, 0, -1, 1};
 
-		st = new StringTokenizer(br.readLine());
-		R = Integer.parseInt(st.nextToken());
-		C = Integer.parseInt(st.nextToken());
-		arr = new char[R][C];
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringBuilder sb = new StringBuilder();
+        StringTokenizer st;
 
-		for (int i = 0; i < R; i++) {
-			String input_line = br.readLine();
-			for (int j = 0; j < C; j++) {
-				arr[i][j] = input_line.charAt(j);
-			}
-		}
+        // 1400 시작
+        int R, C;
+        int[][] map;
+        Point start = null;
 
-		///////////////////////////////////////////////////////
+        st = new StringTokenizer(br.readLine());
+        R = Integer.parseInt(st.nextToken());
+        C = Integer.parseInt(st.nextToken());
 
-		int init_i = -1;
-		int init_j = -1;
-		for (int i = 0; i < R; i++) {
-			for (int j = 0; j < C; j++) {
-				if (arr[i][j] == 'J') {
-					init_i = i;
-					init_j = j;
-					break;
-				}
-			}
-		}
+        map = new int[R][C];
+        for (int i = 0; i < map.length; i++) {
+            String line = br.readLine();
+            for (int j = 0; j < map[0].length; j++) {
+                char one = line.charAt(j);
+                if (one == '#') {
+                    map[i][j] = -1;
+                } else if (one == 'F') {
+                    map[i][j] = 0;
+                } else if (one == 'J') {
+                    map[i][j] = Integer.MAX_VALUE;
+                    start = new Point(i, j, 0);
+                } else if (one == '.') {
+                    map[i][j] = Integer.MAX_VALUE;
+                }
+            }
+        }
 
-		Queue<Data> queue = new LinkedList<>();
-		boolean[][] visited = new boolean[R][C];
+        /////////////////////////////////////////////////////////////////////////
 
-		queue.add(new Data(init_i, init_j, 0));
-		visited[init_i][init_j] = true;
+        spreadFire(map);
 
-		int[][] time_fire = new int[R][C];
-		complete_time_fire(arr, time_fire);
+//        for (int i = 0; i < map.length; i++) {
+//            for (int j = 0; j < map[0].length; j++) {
+//                System.out.print(map[i][j] + " ");
+//            }
+//            System.out.println();
+//        }
 
-		while (!queue.isEmpty()) {
-			Data tmp = queue.remove();
+        boolean[][] visited = new boolean[map.length][map[0].length];
+        Queue<Point> queue = new LinkedList<>();
 
-			if (tmp.i == 0 || tmp.i == R - 1 || tmp.j == 0 || tmp.j == C - 1) {
-				System.out.println(tmp.time + 1);
-				System.exit(0);
-			}
+        visited[start.y][start.x] = true;
+        queue.add(start);
 
-			// 위로
-			if (tmp.i - 1 >= 0 && arr[tmp.i - 1][tmp.j] == '.' && !visited[tmp.i - 1][tmp.j]
-					&& tmp.time + 1 < time_fire[tmp.i - 1][tmp.j]) {
-				visited[tmp.i - 1][tmp.j] = true;
-				queue.add(new Data(tmp.i - 1, tmp.j, tmp.time + 1));
-			}
+        while (!queue.isEmpty()) {
+            Point tmp = queue.remove();
 
-			// 아래로
-			if (tmp.i + 1 < R && arr[tmp.i + 1][tmp.j] == '.' && !visited[tmp.i + 1][tmp.j]
-					&& tmp.time + 1 < time_fire[tmp.i + 1][tmp.j]) {
-				visited[tmp.i + 1][tmp.j] = true;
-				queue.add(new Data(tmp.i + 1, tmp.j, tmp.time + 1));
-			}
+//            System.out.println("y = " + tmp.y + " x = "+tmp.x + " depth = " + tmp.depth);
 
-			// 왼쪽
-			if (tmp.j - 1 >= 0 && arr[tmp.i][tmp.j - 1] == '.' && !visited[tmp.i][tmp.j - 1]
-					&& tmp.time + 1 < time_fire[tmp.i][tmp.j - 1]) {
-				visited[tmp.i][tmp.j - 1] = true;
-				queue.add(new Data(tmp.i, tmp.j - 1, tmp.time + 1));
-			}
+            if (tmp.y == 0 || tmp.y == map.length - 1 || tmp.x == 0 || tmp.x == map[0].length - 1) {
+                sb.append(tmp.depth + 1);
+                break;
+            }
 
-			// 오른쪽
-			if (tmp.j + 1 < C && arr[tmp.i][tmp.j + 1] == '.' && !visited[tmp.i][tmp.j + 1]
-					&& tmp.time + 1 < time_fire[tmp.i][tmp.j + 1]) {
-				visited[tmp.i][tmp.j + 1] = true;
-				queue.add(new Data(tmp.i, tmp.j + 1, tmp.time + 1));
-			}
-		}
+            for (int direction = 0; direction < 4; direction++) {
+                int newY = tmp.y + dy[direction];
+                int newX = tmp.x + dx[direction];
 
-		System.out.println("IMPOSSIBLE");
+                if (newY < 0 || newY >= map.length || newX < 0 || newX >= map[0].length)
+                    continue;
 
-	}
+                if (map[newY][newX] == -1)
+                    continue;
 
-	public static void complete_time_fire(char[][] arr, int[][] time_fire) {
+                if (visited[newY][newX])
+                    continue;
 
-		Queue<Data> queue = new LinkedList<>();
-		boolean[][] visited = new boolean[arr.length][arr[0].length];
+                // map의 값은 불이 있기 시작한 시간
+                if (map[newY][newX] <= tmp.depth + 1)
+                    continue;
 
-		for (int i = 0; i < arr.length; i++) {
-			for (int j = 0; j < arr[0].length; j++) {
-				if (arr[i][j] == 'F') {
-					visited[i][j] = true;
-					queue.add(new Data(i, j, 0));
-				}
-			}
-		}
+                visited[newY][newX] = true;
+                queue.add(new Point(newY, newX, tmp.depth + 1));
 
-		for (int i = 0; i < arr.length; i++) {
-			for (int j = 0; j < arr[0].length; j++) {
-				time_fire[i][j] = Integer.MAX_VALUE;
-			}
-		}
+            }
+        }
 
-		while (!queue.isEmpty()) {
-			Data tmp = queue.remove();
-			time_fire[tmp.i][tmp.j] = tmp.time;
+        if (sb.length() == 0) {
+            sb.append("IMPOSSIBLE");
+        }
 
-			// 위로
-			if (tmp.i - 1 >= 0 && arr[tmp.i - 1][tmp.j] != '#' && !visited[tmp.i - 1][tmp.j]) {
-				visited[tmp.i - 1][tmp.j] = true;
-				queue.add(new Data(tmp.i - 1, tmp.j, tmp.time + 1));
-			}
+        System.out.println(sb);
 
-			// 아래로
-			if (tmp.i + 1 < arr.length && arr[tmp.i + 1][tmp.j] != '#' && !visited[tmp.i + 1][tmp.j]) {
-				visited[tmp.i + 1][tmp.j] = true;
-				queue.add(new Data(tmp.i + 1, tmp.j, tmp.time + 1));
-			}
+    }
 
-			// 왼쪽
-			if (tmp.j - 1 >= 0 && arr[tmp.i][tmp.j - 1] != '#' && !visited[tmp.i][tmp.j - 1]) {
-				visited[tmp.i][tmp.j - 1] = true;
-				queue.add(new Data(tmp.i, tmp.j - 1, tmp.time + 1));
-			}
+    public static void spreadFire(int[][] map) {
 
-			// 오른쪽
-			if (tmp.j + 1 < arr[0].length && arr[tmp.i][tmp.j + 1] != '#' && !visited[tmp.i][tmp.j + 1]) {
-				visited[tmp.i][tmp.j + 1] = true;
-				queue.add(new Data(tmp.i, tmp.j + 1, tmp.time + 1));
+        boolean[][] visited = new boolean[map.length][map[0].length];
+        Queue<Point> queue = new LinkedList<>();
 
-			}
+        for (int i = 0; i < map.length; i++) {
+            for (int j = 0; j < map[0].length; j++) {
+                if (map[i][j] == 0) {
+                    visited[i][j] = true;
+                    queue.add(new Point(i, j, 0));
+                }
+            }
+        }
 
-		}
-	}
+        while (!queue.isEmpty()) {
+            Point tmp = queue.remove();
+
+            map[tmp.y][tmp.x] = tmp.depth;
+
+            for (int direction = 0; direction < 4; direction++) {
+                int newY = tmp.y + dy[direction];
+                int newX = tmp.x + dx[direction];
+
+                if (newY < 0 || newY >= map.length || newX < 0 || newX >= map[0].length)
+                    continue;
+
+                if (map[newY][newX] == -1)
+                    continue;
+
+                if (visited[newY][newX])
+                    continue;
+
+                visited[newY][newX] = true;
+                queue.add(new Point(newY, newX, tmp.depth + 1));
+
+            }
+        }
+
+    }
 }
