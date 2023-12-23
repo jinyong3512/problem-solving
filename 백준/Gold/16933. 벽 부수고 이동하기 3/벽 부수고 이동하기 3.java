@@ -67,11 +67,11 @@ public class Main {
             // 낮일 경우 벽을 부실 수 있다!
             if (tmp.day == 1) {
 
-                // 제자리에서 하루 보내기
-                if (lastChances[tmp.y][tmp.x][0] < tmp.lastChance) {
-                    lastChances[tmp.y][tmp.x][0] = tmp.lastChance;
-                    queue.add(new Point(tmp.y, tmp.x, tmp.depth + 1, tmp.lastChance, 0));
-                }
+//                // 제자리에서 하루 보내기
+//                if (lastChances[tmp.y][tmp.x][0] < tmp.lastChance) {
+//                    lastChances[tmp.y][tmp.x][0] = tmp.lastChance;
+//                    queue.add(new Point(tmp.y, tmp.x, tmp.depth + 1, tmp.lastChance, 0));
+//                }
 
                 // 부실 수 있는 기회가 있다!!
                 if (tmp.lastChance > 0) {
