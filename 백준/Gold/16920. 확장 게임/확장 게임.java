@@ -2,13 +2,12 @@ import java.io.*;
 import java.util.*;
 
 class Data {
-    int y, x, depth, number;
+    int y, x, depth;
 
-    Data(int y, int x, int depth, int number) {
+    Data(int y, int x, int depth) {
         this.y = y;
         this.x = x;
         this.depth = depth;
-        this.number = number;
     }
 }
 
@@ -56,14 +55,10 @@ public class Main {
 
         ///////////////////////////////////////////
 
-        PriorityQueue<Data> priorityQueue = new PriorityQueue<>(new Comparator<Data>() {
-            @Override
-            public int compare(Data o1, Data o2) {
-                if (o1.number == o2.number)
-                    return o1.depth - o2.depth;
-                return o1.number - o2.number;
-            }
-        });
+        ArrayList<Queue<Data>> bigArrayList = new ArrayList<>();
+        for (int i = 0; i <= P; i++) {
+            bigArrayList.add(new LinkedList<>());
+        }
 
         for (int i = 0; i < arr.length; i++) {
             for (int j = 0; j < arr[0].length; j++) {
@@ -71,53 +66,57 @@ public class Main {
 
                 } else if (arr[i][j] == 0) {
 
-                } else priorityQueue.add(new Data(i, j, 0, arr[i][j]));
+                } else bigArrayList.get(arr[i][j]).add(new Data(i, j, 0));
             }
         }
 
 
         while (true) {
 
-            PriorityQueue<Data> newPriorityQueue = new PriorityQueue<>(new Comparator<Data>() {
-                @Override
-                public int compare(Data o1, Data o2) {
-                    if (o1.number == o2.number)
-                        return o1.depth - o2.depth;
-                    return o1.number - o2.number;
-                }
-            });
+            ArrayList<Queue<Data>> newBigArrayList = new ArrayList<>();
+            for (int i = 0; i <= P; i++) {
+                newBigArrayList.add(new LinkedList<>());
+            }
 
-            while (!priorityQueue.isEmpty()) {
-                Data tmp = priorityQueue.remove();
+            for (int i = 1; i <= P; i++) {
+                while (!bigArrayList.get(i).isEmpty()) {
+                    Data tmp = bigArrayList.get(i).remove();
 
-                if (tmp.depth == S[tmp.number - 1]) {
-                    newPriorityQueue.add(new Data(tmp.y, tmp.x, 0, tmp.number));
-                    continue;
-                }
-
-                for (int direction = 0; direction < 4; direction++) {
-                    int newY = tmp.y + dy[direction];
-                    int newX = tmp.x + dx[direction];
-
-                    if (newY < 0 || newY >= arr.length || newX < 0 || newX >= arr[0].length) continue;
-
-                    if (arr[newY][newX] == -1) {
+                    if (tmp.depth == S[i - 1]) {
+                        newBigArrayList.get(i).add(new Data(tmp.y, tmp.x, 0));
                         continue;
-                    } else if (arr[newY][newX] == 0) {
-                        arr[newY][newX] = tmp.number;
-                        priorityQueue.add(new Data(newY, newX, tmp.depth + 1, tmp.number));
-                    } else if (arr[newY][newX] == tmp.number) {
-                        continue;
-                    } else {
-                        continue;
+                    }
+
+                    for (int direction = 0; direction < 4; direction++) {
+                        int newY = tmp.y + dy[direction];
+                        int newX = tmp.x + dx[direction];
+
+                        if (newY < 0 || newY >= arr.length || newX < 0 || newX >= arr[0].length) continue;
+
+                        if (arr[newY][newX] == -1) {
+                            continue;
+                        } else if (arr[newY][newX] == 0) {
+                            arr[newY][newX] = i;
+                            bigArrayList.get(i).add(new Data(newY, newX, tmp.depth + 1));
+                        } else if (arr[newY][newX] == i) {
+                            continue;
+                        } else {
+                            continue;
+                        }
                     }
                 }
             }
 
-            if (newPriorityQueue.size() == 0)
+            boolean canStop = true;
+            for (int i = 0; i <= P; i++) {
+                if (newBigArrayList.get(i).size() != 0)
+                    canStop = false;
+            }
+
+            if (canStop)
                 break;
-            else
-                priorityQueue = newPriorityQueue;
+
+            bigArrayList = newBigArrayList;
         }
 
 
