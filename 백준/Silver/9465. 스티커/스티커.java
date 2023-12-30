@@ -40,13 +40,13 @@ public class Main {
 
                 // 윗 칸일때
                 dp[0][j] = Math.max(dp[1][j-1]+arr[0][j-1] , dp[0][j]);
-                dp[0][j] = Math.max(dp[0][j-2]+arr[0][j-1] , dp[0][j]);
+//                dp[0][j] = Math.max(dp[0][j-2]+arr[0][j-1] , dp[0][j]);
                 dp[0][j] = Math.max(dp[1][j-2]+arr[0][j-1] , dp[0][j]);
 
                 // 아래 칸일때
                 dp[1][j] = Math.max(dp[0][j-1]+arr[1][j-1] , dp[1][j]);
                 dp[1][j] = Math.max(dp[0][j-2]+arr[1][j-1] , dp[1][j]);
-                dp[1][j] = Math.max(dp[1][j-2]+arr[1][j-1] , dp[1][j]);
+//                dp[1][j] = Math.max(dp[1][j-2]+arr[1][j-1] , dp[1][j]);
 
             }
 
@@ -59,14 +59,16 @@ public class Main {
 //            }
 //            System.out.println("------------------");
 
-            int answer = 0;
-            for (int i = 0; i < 2; i++) {
-                for (int j = 1; j <= n; j++) {
-                    answer = Math.max(answer, dp[i][j]);
-                }
-            }
-            sb.append(answer).append("\n");
-
+//            int answer = 0;
+//            for (int i = 0; i < 2; i++) {
+//                for (int j = 1; j <= n; j++) {
+//                    answer = Math.max(answer, dp[i][j]);
+//                }
+//            }
+//            sb.append(answer).append("\n");
+            
+            sb.append(Math.max(dp[0][n],dp[1][n])).append("\n");
+            
         }
 
         System.out.println(sb);
