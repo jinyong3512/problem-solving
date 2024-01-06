@@ -14,38 +14,51 @@ public class Main {
 
         /////////////////////////////////////////////////////////////////////////
 
+        int SSize = S.length();
+        int TSize = T.length();
+
+        Deque<Character> deque = new ArrayDeque<>();
+        for (int i = 0; i < TSize; i++) {
+            deque.addLast(T.charAt(i));
+        }
+
         while (true) {
 
-            if (T.equals(S)) {
-                sb.append("1");
-                break;
-            }
-
-            if (T.equals("")) {
-                break;
-            }
-
-            if (T.charAt(T.length() - 1) == 'A') {
-                T = T.substring(0, T.length() - 1);
-            } else {
-
-                String tmp = "";
-
-                for (int i = T.length() - 2; i >= 0; i--) {
-                    tmp += T.charAt(i);
+            if (deque.size() == SSize) {
+                boolean can = true;
+                for (int i = 0; i < SSize; i++) {
+                    if (deque.removeFirst() != S.charAt(i)) {
+                        can = false;
+                    }
                 }
 
-                T = tmp;
+                if (can) {
+                    sb.append("1");
+                } else {
+                    sb.append("0");
+                }
+                System.out.println(sb);
+                break;
+            }
+
+            if (deque.peekLast() == 'A') {
+                deque.removeLast();
+            } else {
+
+                deque.removeLast();
+
+                Deque<Character> newDeque = new ArrayDeque<>();
+
+                while (!deque.isEmpty()) {
+                    newDeque.addLast(deque.removeLast());
+                }
+
+                deque = newDeque;
+
 
             }
 
         }
-
-        if (sb.length() == 0) {
-            sb.append("0");
-        }
-
-        System.out.println(sb);
 
     }
 }
