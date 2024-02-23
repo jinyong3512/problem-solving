@@ -97,13 +97,17 @@ public class Main {
         for (int i = 0; i < map.length; i++) {
             for (int j = 0; j < map[0].length; j++) {
                 if (map[i][j] == -1) {
-                    System.out.print(".");
+//                    System.out.print(".");
+                    sb.append(".");
                 } else {
-                    System.out.print("O");
+//                    System.out.print("O");
+                    sb.append("O");
                 }
             }
-            System.out.println();
+//            System.out.println();
+            sb.append("\n");
         }
+        System.out.println(sb);
 
     }
 }
