@@ -1,6 +1,16 @@
 import java.io.*;
 import java.util.*;
 
+class Point {
+    int y, x;
+
+    Point(int y, int x) {
+        this.y = y;
+        this.x = x;
+
+    }
+}
+
 public class Main {
 
     public static int[] dy = new int[]{-1, 1, 0, 0};
@@ -32,113 +42,78 @@ public class Main {
 
         ////////////////////////////////////////////
 
-        int[][] map = new int[N][M];
-        boolean[][] visited = new boolean[N][M];
-        ArrayList<Integer> counts = new ArrayList<>();
-        counts.add(0);
+        int[][] answer = new int[N][M];
 
-        int islandNumber = 1;
+        boolean[][] visited = new boolean[N][M];
+
+        Queue<Point> queue = new LinkedList<>();
+//        Queue<Point> walls = new LinkedList<>();
+
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < M; j++) {
                 if (!wall[i][j] && !visited[i][j]) {
                     count = 0;
-                    dfs(wall, map, i, j, visited, islandNumber);
-                    counts.add(count);
-                    islandNumber++;
-                }
-            }
-        }
+                    queue.add(new Point(i, j));
+                    visited[i][j] = true;
 
-//        for(Integer value : counts)
-//            System.out.print(value +" ");
-//        System.out.println();
-//
-//        for (int i = 0; i < N; i++) {
-//            for (int j = 0; j < M; j++) {
-//                System.out.print(map[i][j]+" ");
-//            }
-//            System.out.println();
-//        }
+                    HashMap<Integer, Boolean> walls = new HashMap<>();
 
-//        for (int i = 0; i < N; i++) {
-//            for (int j = 0; j < M; j++) {
-//                if (map[i][j] != 0) {
-//                    map[i][j] = counts.get(map[i][j]);
-//                }
-//            }
-//        }
-//
-//        for (int i = 0; i < N; i++) {
-//            for (int j = 0; j < M; j++) {
-//                System.out.print(map[i][j]+" ");
-//            }
-//            System.out.println();
-//        }
+                    while (!queue.isEmpty()) {
+                        count++;
 
-        int[][] answer = new int[N][M];
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < M; j++) {
-                if (wall[i][j]) {
+                        Point tmp = queue.remove();
+//                        System.out.println("tmp.y = " + tmp.y + " tmp.x = "+ tmp.x);
 
-                    boolean[] visited2 = new boolean[counts.size()];
+                        for (int direction = 0; direction < 4; direction++) {
 
-                    for (int direction = 0; direction < 4; direction++) {
-                        int newY = i + dy[direction];
-                        int newX = j + dx[direction];
-//                        System.out.println("newY = " + newY + " newX = "+ newX);
+                            int newY = tmp.y + dy[direction];
+                            int newX = tmp.x + dx[direction];
 
-                        if (newY < 0 || newX < 0 || newY >= wall.length || newX >= wall[0].length)
-                            continue;
+                            if (newY < 0 || newX < 0 || newY >= wall.length || newX >= wall[0].length)
+                                continue;
 
-                        if (map[newY][newX] == 0)
-                            continue;
+                            if (wall[newY][newX]) {
+//                                if (!visited2[newY][newX]) {
+//                                    visited2[newY][newX] = true;
+//                                    walls.add(new Point(newY, newX));
+//                                }
+                                walls.put(newY * wall[0].length + newX, true);
+                            } else {
+                                if (!visited[newY][newX]) {
+                                    visited[newY][newX] = true;
+                                    queue.add(new Point(newY, newX));
+                                }
+                            }
 
-                        if (visited2[map[newY][newX]])
-                            continue;
+                        }
 
-                        visited2[map[newY][newX]] = true;
-                        answer[i][j] += counts.get(map[newY][newX]);
-//                        System.out.println("map[i][j] = " + map[i][j]);
-//                        System.out.println("counts.get(map[i][j]) = " + counts.get(map[i][j]));
-//                        System.out.println("answer[i][j] = " + answer[i][j]);
                     }
+//                    System.out.println(count);
 
-                    answer[i][j]++;
+//                    while (!walls.isEmpty()) {
+//                        Point tmp = walls.remove();
+//
+//                        answer[tmp.y][tmp.x] += count;
+//
+//                    }
 
+                    for (Integer key : walls.keySet()) {
+                        answer[key / wall[0].length][key % wall[0].length] += count;
+                    }
                 }
             }
         }
 
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < M; j++) {
-                sb.append(answer[i][j] % 10);
+                if (!wall[i][j])
+                    sb.append("0");
+                else
+                    sb.append((answer[i][j] + 1) % 10);
             }
             sb.append("\n");
         }
         System.out.println(sb);
-    }
-
-    public static void dfs(boolean[][] wall, int[][] map, int i, int j, boolean[][] visited, int islandNumber) {
-        count++;
-        visited[i][j] = true;
-        map[i][j] = islandNumber;
-
-        for (int direction = 0; direction < 4; direction++) {
-            int newY = i + dy[direction];
-            int newX = j + dx[direction];
-
-            if (newY < 0 || newX < 0 || newY >= wall.length || newX >= wall[0].length)
-                continue;
-
-            if (wall[newY][newX])
-                continue;
-
-            if (visited[newY][newX])
-                continue;
-
-            dfs(wall, map, newY, newX, visited, islandNumber);
-
-        }
 
     }
 }
