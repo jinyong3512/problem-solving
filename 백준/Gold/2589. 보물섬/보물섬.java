@@ -1,84 +1,83 @@
 import java.io.*;
 import java.util.*;
 
-class Data {
-	int y, x, depth;
+class Point {
+    int y, x, depth;
 
-	Data(int y, int x, int depth) {
-		this.y = y;
-		this.x = x;
-		this.depth = depth;
-	}
+    Point(int y, int x, int depth) {
+        this.y = y;
+        this.x = x;
+        this.depth = depth;
+    }
 }
 
 public class Main {
 
-	public static void main(String[] args) throws IOException {
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		StringBuilder sb = new StringBuilder();
-		StringTokenizer st;
+    public static int[] dy = new int[]{-1, 1, 0, 0};
+    public static int[] dx = new int[]{0, 0, -1, 1};
 
-		int L, W;
-		char[][] map;
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringBuilder sb = new StringBuilder();
+        StringTokenizer st;
 
-		st = new StringTokenizer(br.readLine());
-		L = Integer.parseInt(st.nextToken());
-		W = Integer.parseInt(st.nextToken());
-		map = new char[L][W];
+        int N, M;
+        char[][] arr;
 
-		for (int i = 0; i < L; i++) {
-			String line = br.readLine();
-			for (int j = 0; j < W; j++) {
-				map[i][j] = line.charAt(j);
-			}
-		}
+        st = new StringTokenizer(br.readLine());
+        N = Integer.parseInt(st.nextToken());
+        M = Integer.parseInt(st.nextToken());
 
-		/////////////////////////////////////////////////////////////
+        arr = new char[N][M];
+        for (int i = 0; i < N; i++) {
+            String inputLine = br.readLine();
+            for (int j = 0; j < M; j++) {
+                arr[i][j] = inputLine.charAt(j);
+            }
+        }
 
-		int answer = 0;
+        ///////////////////////////////////////////////////////
 
-		for (int i = 0; i < map.length; i++) {
-			for (int j = 0; j < map[0].length; j++) {
-				if (map[i][j] == 'L') {
-					boolean[][] visited = new boolean[map.length][map[0].length];
-					Queue<Data> queue = new LinkedList<>();
+        int answer = -1;
 
-					visited[i][j] = true;
-					queue.add(new Data(i, j, 0));
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < M; j++) {
+                if (arr[i][j] == 'W')
+                    continue;
 
-					while (!queue.isEmpty()) {
-						Data tmp = queue.remove();
+                Queue<Point> queue = new LinkedList<>();
+                queue.add(new Point(i, j, 0));
 
-						answer = Math.max(answer, tmp.depth);
+                boolean[][] visited = new boolean[N][M];
+                visited[i][j] = true;
 
-						// 위로
-						if (tmp.y - 1 >= 0 && !visited[tmp.y - 1][tmp.x] && map[tmp.y - 1][tmp.x] == 'L') {
-							visited[tmp.y - 1][tmp.x] = true;
-							queue.add(new Data(tmp.y - 1, tmp.x, tmp.depth + 1));
-						}
+                while (!queue.isEmpty()) {
+                    Point curPoint = queue.remove();
 
-						// 아래로
-						if (tmp.y + 1 < map.length && !visited[tmp.y + 1][tmp.x] && map[tmp.y + 1][tmp.x] == 'L') {
-							visited[tmp.y + 1][tmp.x] = true;
-							queue.add(new Data(tmp.y + 1, tmp.x, tmp.depth + 1));
-						}
+                    answer = Math.max(answer,curPoint.depth);
 
-						// 왼쪽
-						if (tmp.x - 1 >= 0 && !visited[tmp.y][tmp.x-1] && map[tmp.y][tmp.x-1] == 'L') {
-							visited[tmp.y ][tmp.x-1] = true;
-							queue.add(new Data(tmp.y , tmp.x-1, tmp.depth + 1));
-						}
+                    for (int direction = 0; direction < 4; direction++) {
+                        int newY = curPoint.y + dy[direction];
+                        int newX = curPoint.x + dx[direction];
 
-						// 오른쪽
-						if (tmp.x + 1 < map[0].length && !visited[tmp.y ][tmp.x+ 1] && map[tmp.y ][tmp.x+ 1] == 'L') {
-							visited[tmp.y ][tmp.x+ 1] = true;
-							queue.add(new Data(tmp.y , tmp.x+ 1, tmp.depth + 1));
-						}
-					}
-				}
-			}
-		}
-		
-		System.out.println(answer);
-	}
+                        if (newY < 0 || newY >= N || newX < 0 || newX >= M)
+                            continue;
+
+                        if (arr[newY][newX] == 'W')
+                            continue;
+
+                        if (visited[newY][newX])
+                            continue;
+
+                        visited[newY][newX] = true;
+                        queue.add(new Point(newY, newX, curPoint.depth + 1));
+                    }
+
+                }
+            }
+        }
+
+        System.out.println(answer);
+
+    }
 }
