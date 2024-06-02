@@ -64,17 +64,17 @@ public class Main {
         Deque<Integer> course = new ArrayDeque<>();
 
         int cur = B;
-        while(true){
+        while (true) {
             course.addFirst(cur);
             cur = prev[cur];
-            if(cur==0)
+            if (cur == 0)
                 break;
         }
 
         sb.append(distances[B]).append("\n");
 
         sb.append(course.size()).append("\n");
-        while(!course.isEmpty())
+        while (!course.isEmpty())
             sb.append(course.removeFirst()).append(" ");
 
         System.out.println(sb);
@@ -115,7 +115,9 @@ public class Main {
 
             for (int i = 0; i < graph.get(curVertex.number).size(); i++) {
                 Edge curEdge = graph.get(curVertex.number).get(i);
-                pQ.add(new Vertex(curEdge.endVertex, curVertex.weight + curEdge.weight, curVertex.number));
+
+                if (!visited[curEdge.endVertex])
+                    pQ.add(new Vertex(curEdge.endVertex, curVertex.weight + curEdge.weight, curVertex.number));
 
             }
 
