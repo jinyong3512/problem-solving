@@ -16,12 +16,12 @@ class Edge {
 class Vertex {
     int number;
     int weight;
-    ArrayList<Integer> course;
+    int prev;
 
-    Vertex(int number, int weight, ArrayList<Integer> course) {
+    Vertex(int number, int weight, int prev) {
         this.number = number;
         this.weight = weight;
-        this.course = course;
+        this.prev = prev;
     }
 }
 
@@ -58,20 +58,30 @@ public class Main {
 
         //////////////////////////////////////////////////////
 
-        ArrayList<ArrayList<Integer>> courses = new ArrayList<>();
-        for (int i = 0; i <= n; i++)
-            courses.add(new ArrayList<>());
-        long[] distances = dijkstra(graph, A, courses);
+        int[] prev = new int[n + 1];
+        long[] distances = dijkstra(graph, A, prev);
+
+        Deque<Integer> course = new ArrayDeque<>();
+
+        int cur = B;
+        while(true){
+            course.addFirst(cur);
+            cur = prev[cur];
+            if(cur==0)
+                break;
+        }
 
         sb.append(distances[B]).append("\n");
-        sb.append(courses.get(B).size()).append("\n");
-        for(Integer value: courses.get(B))
-            sb.append(value).append(" ");
+
+        sb.append(course.size()).append("\n");
+        while(!course.isEmpty())
+            sb.append(course.removeFirst()).append(" ");
+
         System.out.println(sb);
 
     }
 
-    public static long[] dijkstra(ArrayList<ArrayList<Edge>> graph, int A, ArrayList<ArrayList<Integer>> courses) {
+    public static long[] dijkstra(ArrayList<ArrayList<Edge>> graph, int A, int[] prevs) {
 
         long[] distances = new long[graph.size()];
         boolean[] visited = new boolean[graph.size()];
@@ -90,7 +100,7 @@ public class Main {
         for (int i = 0; i < graph.size(); i++)
             distances[i] = Integer.MAX_VALUE;
 
-        pQ.add(new Vertex(A, 0, new ArrayList<>()));
+        pQ.add(new Vertex(A, 0, 0));
 
         while (!pQ.isEmpty()) {
             Vertex curVertex = pQ.remove();
@@ -100,22 +110,12 @@ public class Main {
 
             visited[curVertex.number] = true;
             distances[curVertex.number] = curVertex.weight;
-            for (Integer value : curVertex.course)
-                courses.get(curVertex.number).add(value);
-            courses.get(curVertex.number).add(curVertex.number);
+            prevs[curVertex.number] = curVertex.prev;
 
 
             for (int i = 0; i < graph.get(curVertex.number).size(); i++) {
-
                 Edge curEdge = graph.get(curVertex.number).get(i);
-
-                ArrayList<Integer> course = new ArrayList<>();
-                for (Integer value : curVertex.course) {
-                    course.add(value);
-                }
-                course.add(curVertex.number);
-
-                pQ.add(new Vertex(curEdge.endVertex, curVertex.weight + curEdge.weight, course));
+                pQ.add(new Vertex(curEdge.endVertex, curVertex.weight + curEdge.weight, curVertex.number));
 
             }
 
