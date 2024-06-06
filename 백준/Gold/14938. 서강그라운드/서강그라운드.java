@@ -62,36 +62,71 @@ public class Main {
 
         int answer = 0;
 
+        // O(n+r)
+//        for (int t = 1; t <= n; t++) {
+//
+//            int answerCandidate = 0;
+//            boolean[] visited = new boolean[n + 1];
+//            Queue<Vertex> queue = new LinkedList<>();
+//
+//            queue.add(new Vertex(t, 0));
+//
+//            while (!queue.isEmpty()) {
+//                Vertex curVertex = queue.remove();
+//
+//                if (!visited[curVertex.number]) {
+//                    visited[curVertex.number] = true;
+//                    answerCandidate += arr[curVertex.number];
+//                }
+//
+//                for (int i = 0; i < graph.get(curVertex.number).size(); i++) {
+//                    Edge curEdge = graph.get(curVertex.number).get(i);
+//
+//                    if (curEdge.weight + curVertex.weight <= m) {
+//                        queue.add(new Vertex(curEdge.endVertex, curEdge.weight + curVertex.weight));
+//                    }
+//                }
+//            }
+//            answer = Math.max(answer, answerCandidate);
+//        }
         for (int t = 1; t <= n; t++) {
 
             int answerCandidate = 0;
             boolean[] visited = new boolean[n + 1];
-            Queue<Vertex> queue = new LinkedList<>();
-
-            queue.add(new Vertex(t, 0));
-
-            while (!queue.isEmpty()) {
-                Vertex curVertex = queue.remove();
-
-                if (!visited[curVertex.number]) {
-                    visited[curVertex.number] = true;
-                    answerCandidate += arr[curVertex.number];
+            PriorityQueue<Vertex> pQ = new PriorityQueue<>(new Comparator<Vertex>() {
+                @Override
+                public int compare(Vertex o1, Vertex o2) {
+                    if (o1.weight < o2.weight)
+                        return -1;
+                    else if (o1.weight == o2.weight)
+                        return 0;
+                    else
+                        return 1;
                 }
+            });
+
+            pQ.add(new Vertex(t, 0));
+
+            while (!pQ.isEmpty()) {
+                Vertex curVertex = pQ.remove();
+
+                if (visited[curVertex.number])
+                    continue;
+
+                visited[curVertex.number] = true;
+                answerCandidate += arr[curVertex.number];
 
                 for (int i = 0; i < graph.get(curVertex.number).size(); i++) {
                     Edge curEdge = graph.get(curVertex.number).get(i);
 
                     if (curEdge.weight + curVertex.weight <= m) {
-                        queue.add(new Vertex(curEdge.endVertex, curEdge.weight + curVertex.weight));
+                        pQ.add(new Vertex(curEdge.endVertex, curEdge.weight + curVertex.weight));
                     }
                 }
-
-
             }
-
-
             answer = Math.max(answer, answerCandidate);
         }
+
 
         System.out.println(answer);
 
