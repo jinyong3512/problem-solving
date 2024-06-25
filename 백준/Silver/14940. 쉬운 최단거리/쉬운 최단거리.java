@@ -1,95 +1,124 @@
-import java.io.*;
 import java.util.*;
+import java.io.*;
 
-class Point {
-	int y, x, depth;
+class Vertex {
 
-	Point(int y, int x, int depth) {
-		this.y = y;
-		this.x = x;
-		this.depth = depth;
-	}
+    int y, x, weight;
+
+    Vertex(int y, int x, int weight) {
+        this.y = y;
+        this.x = x;
+        this.weight = weight;
+    }
+
 }
 
-class Main {
-	public static void main(String[] args) throws IOException {
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		StringBuilder sb = new StringBuilder();
-		StringTokenizer st;
 
-		int n, m;
-		int[][] arr;
+public class Main {
 
-		st = new StringTokenizer(br.readLine());
-		n = Integer.parseInt(st.nextToken());
-		m = Integer.parseInt(st.nextToken());
-		arr = new int[n][m];
+    public static int[] dy = new int[]{-1, 1, 0, 0};
+    public static int[] dx = new int[]{0, 0, -1, 1};
 
-		for (int i = 0; i < n; i++) {
-			st = new StringTokenizer(br.readLine());
-			for (int j = 0; j < m; j++) {
-				arr[i][j] = Integer.parseInt(st.nextToken());
-			}
-		}
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringBuilder sb = new StringBuilder();
+        StringTokenizer st;
 
-		////////////////////////////////////////
+        // 원래 갈 수 없는 땅인 위치는 0 출력
+        // 원래 갈 수 있는 땅인 부분 중에서 도달할 수 없는 위치는 -1 출력
 
-		boolean[][] visited = new boolean[n][m];
-		int[][] answer = new int[n][m];
-		Queue<Point> queue = new LinkedList<>();
+        int n, m;
+        int[][] arr;
 
-		for (int i = 0; i < n; i++) {
-			for (int j = 0; j < m; j++) {
+        st = new StringTokenizer(br.readLine());
+        n = Integer.parseInt(st.nextToken());
+        m = Integer.parseInt(st.nextToken());
 
-				answer[i][j] = -1;
+        arr = new int[n][m];
+        for (int i = 0; i < n; i++) {
+            st = new StringTokenizer(br.readLine());
+            for (int j = 0; j < m; j++) {
+                arr[i][j] = Integer.parseInt(st.nextToken());
+            }
+        }
 
-				if (arr[i][j] == 2) {
-					visited[i][j] = true;
-					queue.add(new Point(i, j, 0));
-				} else if (arr[i][j] == 0) {
-					answer[i][j] = 0;
-				}
-			}
-		}
+        //////////////////////////////////////////////////////
 
-		while (!queue.isEmpty()) {
-			Point tmp = queue.remove();
+        int startY = -1;
+        int startX = -1;
 
-			answer[tmp.y][tmp.x] = tmp.depth;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (arr[i][j] == 2) {
+                    startY = i;
+                    startX = j;
+                }
+            }
+        }
 
-			// 위로
-			if (tmp.y - 1 >= 0 && !visited[tmp.y - 1][tmp.x] && arr[tmp.y - 1][tmp.x] == 1) {
-				visited[tmp.y - 1][tmp.x] = true;
-				queue.add(new Point(tmp.y - 1, tmp.x, tmp.depth + 1));
-			}
+        int[][] distances = dijkstra(arr, startY, startX);
 
-			// 아래로
-			if (tmp.y + 1 < arr.length && !visited[tmp.y + 1][tmp.x] && arr[tmp.y + 1][tmp.x] == 1) {
-				visited[tmp.y + 1][tmp.x] = true;
-				queue.add(new Point(tmp.y + 1, tmp.x, tmp.depth + 1));
-			}
+        for (int i = 0; i < distances.length; i++) {
+            for (int j = 0; j < distances[i].length; j++) {
+                if (distances[i][j] == Integer.MAX_VALUE) {
+                    if (arr[i][j] == 0)
+                        sb.append(0).append(" ");
+                    else
+                        sb.append(-1).append(" ");
+                } else {
+                    sb.append(distances[i][j]).append(" ");
+                }
+            }
+            sb.append("\n");
+        }
 
-			// 왼쪽
-			if (tmp.x - 1 >= 0 && !visited[tmp.y][tmp.x - 1] && arr[tmp.y][tmp.x - 1] == 1) {
-				visited[tmp.y][tmp.x - 1] = true;
-				queue.add(new Point(tmp.y, tmp.x - 1, tmp.depth + 1));
-			}
+        System.out.println(sb);
 
-			// 오른쪽
-			if (tmp.x + 1 < arr[0].length && !visited[tmp.y][tmp.x + 1] && arr[tmp.y][tmp.x + 1] == 1) {
-				visited[tmp.y][tmp.x + 1] = true;
-				queue.add(new Point(tmp.y, tmp.x + 1, tmp.depth + 1));
-			}
+    }
 
-		}
+    public static int[][] dijkstra(int[][] arr, int startY, int startX) {
 
-		for (int i = 0; i < n; i++) {
-			for (int j = 0; j < m; j++) {
-				sb.append(answer[i][j]).append(" ");
-			}
-			sb.append("\n");
-		}
-		System.out.println(sb);
+        PriorityQueue<Vertex> pQ = new PriorityQueue<Vertex>(new Comparator<Vertex>() {
+            @Override
+            public int compare(Vertex o1, Vertex o2) {
+                return o1.weight - o2.weight;
+            }
+        });
 
-	}
+        boolean[][] visited = new boolean[arr.length][arr[0].length];
+        int[][] distances = new int[arr.length][arr[0].length];
+
+        pQ.add(new Vertex(startY, startX, 0));
+        for (int i = 0; i < distances.length; i++) {
+            for (int j = 0; j < distances[i].length; j++) {
+                distances[i][j] = Integer.MAX_VALUE;
+            }
+        }
+
+        while (!pQ.isEmpty()) {
+            Vertex curVertex = pQ.remove();
+
+            if (visited[curVertex.y][curVertex.x])
+                continue;
+
+            visited[curVertex.y][curVertex.x] = true;
+            distances[curVertex.y][curVertex.x] = curVertex.weight;
+
+            for (int direction = 0; direction < 4; direction++) {
+                int newY = curVertex.y + dy[direction];
+                int newX = curVertex.x + dx[direction];
+
+                if (newY < 0 || newY >= arr.length || newX < 0 || newX >= arr[0].length) {
+                    continue;
+                }
+
+                if (arr[newY][newX] == 0)
+                    continue;
+
+                pQ.add(new Vertex(newY, newX, curVertex.weight + 1));
+            }
+
+        }
+        return distances;
+    }
 }
