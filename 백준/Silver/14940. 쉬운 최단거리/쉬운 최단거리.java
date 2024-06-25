@@ -114,6 +114,9 @@ public class Main {
 
                 if (arr[newY][newX] == 0)
                     continue;
+                
+                if(visited[newY][newX])
+                    continue;
 
                 pQ.add(new Vertex(newY, newX, curVertex.weight + 1));
             }
