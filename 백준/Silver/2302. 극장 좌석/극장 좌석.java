@@ -7,45 +7,31 @@ public class Main {
         StringBuilder sb = new StringBuilder();
         StringTokenizer st;
 
-        // 14:50 도전
+        int[][] dp = new int[41][2];
 
-        int N;
-        int M;
-        boolean[] vip;
+        dp[1][0] = 1;
+        dp[1][1] = 0;
 
-        N = Integer.parseInt(br.readLine());
-        vip = new boolean[N + 1];
-
-        M = Integer.parseInt(br.readLine());
-        for (int i = 0; i < M; i++) {
-            int number = Integer.parseInt(br.readLine());
-            vip[number] = true;
+        for (int i = 2; i <= 40; i++) {
+            dp[i][0] = dp[i - 1][0] + dp[i - 1][1];
+            dp[i][1] = dp[i - 1][0];
         }
 
-        //////////////////////////////////////////////////////////////////////////
+        int N = Integer.parseInt(br.readLine());
+        int M = Integer.parseInt(br.readLine());
 
-//        1명 -> 1개
-//        2명 -> 2개
-//        3명 -> 3개
-//        4명 -> 5개
+        boolean[] visited = new boolean[N + 1];
 
-        int[] dp = new int[41];
-        dp[0] = 0;
-        dp[1] = 1;
-        dp[2] = 2;
-//        dp[3] = 3;
-//        dp[4] = 5;
-        for (int i = 3; i <= 40; i++) {
-            dp[i] = dp[i - 1] + dp[i - 2];
-        }
+        for (int i = 0; i < M; i++)
+            visited[Integer.parseInt(br.readLine())] = true;
 
         int answer = 1;
 
         int count = 0;
         for (int i = 1; i <= N; i++) {
-            if (vip[i]) {
+            if (visited[i]) {
                 if (count != 0) {
-                    answer *= dp[count];
+                    answer *= (dp[count][0] + dp[count][1]);
                     count = 0;
                 }
             } else {
@@ -54,9 +40,10 @@ public class Main {
         }
 
         if (count != 0) {
-            answer *= dp[count];
+            answer *= (dp[count][0] + dp[count][1]);
             count = 0;
         }
+
 
         System.out.println(answer);
 
