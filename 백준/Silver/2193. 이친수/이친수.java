@@ -7,41 +7,31 @@ public class Main {
         StringBuilder sb = new StringBuilder();
         StringTokenizer st;
 
-        int N;
+        // 0으로 시작 X
+        // 1이 두 번 연속으로 나타나지 않는다. 즉 11을 부분 문자열로 갖지 않는다.
 
-        N = Integer.parseInt(br.readLine());
+        // N자리 이친수의 개수
 
-        ////////////////////////////////////////////////////////////////////////
+        // N: 1~90
 
-        // N은 1 ~ 90
+        // dp[i][0]: 끝자리가 0인 갯수
+        // dp[i][1]: 끝자리가 1인 갯수
 
-        // 0으로 시작하지 않는다.
-        // 1이 두번 연속으로 나타나지 않음
+        // dp[i][0] = dp[i-1][0] + dp[i-1][1];
+        // dp[i][1] = dp[i-1][0];
 
-        // 1
-        // 10
-        // 100 101
-        // 1000 1001 1010
+        int N = Integer.parseInt(br.readLine());
 
-        // dp[i][0] => 0으로 끝난 갯수
-        // dp[i][1] => 1으로 끝난 갯수
-
-        long[][] dp = new long[N + 1][2];
+        long[][] dp = new long[N+1][2];
         dp[1][0] = 0;
         dp[1][1] = 1;
 
-        for (int i = 1; i < N; i++) {
-            // 0으로 끝난 거엔 0,1 붙일 수 있음
-            // 1으로 끝난 건엔 0밖에 못 붙임
-
-            dp[i+1][1] = dp[i][0];
-
-            dp[i+1][0] = dp[i][0] + dp[i][1];
-
+        for(int i = 2 ; i <= N ; i++){
+            dp[i][0] = dp[i-1][0] + dp[i-1][1];
+            dp[i][1] = dp[i-1][0];
         }
 
         System.out.println(dp[N][0]+dp[N][1]);
-
 
 
     }
