@@ -7,45 +7,28 @@ public class Main {
         StringBuilder sb = new StringBuilder();
         StringTokenizer st;
 
-        int N;
-        int[][] arr;
+        int N = Integer.parseInt(br.readLine());
 
-        N = Integer.parseInt(br.readLine());
-        arr = new int[N][2];
-
-        for (int i = 0; i < N; i++) {
+        int[][] arr = new int[N + 2][2];
+        for (int i = 1; i <= N; i++) {
             st = new StringTokenizer(br.readLine());
-            int T = Integer.parseInt(st.nextToken());
-            int P = Integer.parseInt(st.nextToken());
-
-            arr[i][0] = T;
-            arr[i][1] = P;
+            arr[i][0] = Integer.parseInt(st.nextToken());
+            arr[i][1] = Integer.parseInt(st.nextToken());
         }
 
-        ///////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////
 
-        // i번째 상담을 무조건 선택 할 때 제일 큰 돈을 넣어라
-        int[] dp = new int[N];
+        int[] dp = new int[N + 2];
 
-        for (int i = 0; i < arr.length; i++) {
-
-            for (int j = i - 1; j >= 0; j--) {
-                if (j + arr[j][0] <= i) {
-                    dp[i] = Math.max(dp[i], dp[j]);
-                }
+        for (int i = N; i >= 1; i--) {
+            if (i + arr[i][0] <= N + 1) {
+                dp[i] = Math.max(dp[i + 1], arr[i][1] + dp[i + arr[i][0]]);
+            } else {
+                dp[i] = dp[i + 1];
             }
-
-            if (arr[i][0] + i <= arr.length)
-                dp[i] += arr[i][1];
         }
 
-        int answer = 0;
-        for (int i = 0; i < arr.length; i++) {
-            answer = Math.max(answer, dp[i]);
-//            System.out.print(dp[i] + " ");
-        }
-
-        System.out.println(answer);
+        System.out.println(dp[1]);
 
     }
 }
