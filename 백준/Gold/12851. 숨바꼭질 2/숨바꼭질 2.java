@@ -24,8 +24,8 @@ public class Main {
         /////////////////////////////////////////
 
         Queue<Data> queue = new LinkedList<>();
-        int[] visited = new int[200001];
-        int[] count = new int[200001];
+        int[] visited = new int[100001];
+        int[] count = new int[100001];
 
         queue.add(new Data(N, 0));
         for (int i = 0; i < visited.length; i++)
@@ -47,10 +47,7 @@ public class Main {
                 else
                     newPosition = curData.position * 2;
 
-                if (newPosition < 0)
-                    continue;
-
-                if (newPosition > 200000)
+                if (newPosition < 0 || newPosition > 100000)
                     continue;
 
                 if (curData.depth + 1 < visited[newPosition]) {
@@ -67,7 +64,5 @@ public class Main {
 
         System.out.println(visited[K]);
         System.out.println(count[K]);
-
-
     }
 }
