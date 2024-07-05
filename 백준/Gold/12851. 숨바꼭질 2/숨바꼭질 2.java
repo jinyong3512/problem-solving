@@ -36,6 +36,12 @@ public class Main {
         while (!queue.isEmpty()) {
             Data curData = queue.remove();
 
+            if (curData.position == K) {
+                System.out.println(visited[K]);
+                System.out.println(count[K]);
+                break;
+            }
+
             for (int direction = 0; direction < 3; direction++) {
 
                 int newPosition;
@@ -61,8 +67,5 @@ public class Main {
                 }
             }
         }
-
-        System.out.println(visited[K]);
-        System.out.println(count[K]);
     }
 }
