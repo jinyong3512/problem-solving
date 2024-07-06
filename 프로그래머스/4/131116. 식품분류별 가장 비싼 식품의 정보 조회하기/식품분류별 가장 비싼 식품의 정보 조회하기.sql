@@ -1,0 +1,31 @@
+# SELECT * FROM FOOD_PRODUCT
+
+# CATEGORY MAX_PRICE PRODUCT_NAME
+# 김치 19000 맛있는배추김치
+# 식용유 8950 맛있는마조유
+# 국 2900 맛있는김치찌개
+# 과자 1950 맛있는허니버터칩
+SELECT
+    A.CATEGORY AS CATEGORY,
+    B.MAX_PRICE AS MAX_PRICE,
+    A.PRODUCT_NAME AS PRODUCT_NAME
+    
+FROM 
+    FOOD_PRODUCT AS A
+INNER JOIN
+    (
+    SELECT
+        CATEGORY,
+        MAX(PRICE) AS MAX_PRICE
+    FROM
+        FOOD_PRODUCT
+    GROUP BY
+        CATEGORY
+    ) AS B ON (A.CATEGORY = B.CATEGORY AND A.PRICE = B.MAX_PRICE)
+
+WHERE
+    A.CATEGORY IN ('과자','국','김치','식용유')
+    
+ORDER BY
+    A.PRICE DESC;
+    
