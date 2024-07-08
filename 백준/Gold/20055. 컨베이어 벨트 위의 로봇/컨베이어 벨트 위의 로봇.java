@@ -1,97 +1,80 @@
 import java.io.*;
 import java.util.*;
 
-class Robot {
-	int index;
+class Data {
+    int naegudo;
+    boolean robot;
+
+    Data(int naegudo, boolean robot) {
+        this.naegudo = naegudo;
+        this.robot = robot;
+    }
 }
 
-class Main {
-	public static void main(String[] args) throws IOException {
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		StringBuilder sb = new StringBuilder();
-		StringTokenizer st;
+public class Main {
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringBuilder sb = new StringBuilder();
+        StringTokenizer st;
 
-		int N, K;
-		int[] arr;
+        // 23:43
 
-		st = new StringTokenizer(br.readLine());
-		N = Integer.parseInt(st.nextToken());
-		K = Integer.parseInt(st.nextToken());
-		arr = new int[2 * N];
+        st = new StringTokenizer(br.readLine());
+        int N = Integer.parseInt(st.nextToken());
+        int K = Integer.parseInt(st.nextToken());
 
-		st = new StringTokenizer(br.readLine());
-		for (int i = 0; i < arr.length; i++)
-			arr[i] = Integer.parseInt(st.nextToken());
+        ArrayList<Data> arrayList = new ArrayList<>();
 
-		/////////////////////////////////////////////////
+        st = new StringTokenizer(br.readLine());
+        for (int i = 0; i < 2 * N; i++)
+            arrayList.add(new Data(Integer.parseInt(st.nextToken()), false));
 
-		// 0이 올리는 위치 // N-1이 내리는 위치
-		// 0 index 로봇이 틀딱 로봇
-		ArrayList<Robot> robots = new ArrayList<>();
+        //////////////////////////////////////////////
 
-		int durability_count = 0;
-		int answer = 0;
+        int answer = 0;
+        while (true) {
+            answer++;
+            function1(N, arrayList);
+            function2(N, arrayList);
+            function3(N, arrayList);
+            if (function4(N, arrayList) >= K) {
+                System.out.println(answer);
+                break;
+            }
+        }
 
-		while (true) {
-			answer++;
-			// 1. 벨트가 각 칸 위에 있는 로봇과 함께 한 칸 회전한다.
-			rotate(arr);
-			for (int i = 0; i < robots.size(); i++) {
-				robots.get(i).index++;
-				if (robots.get(i).index == N - 1) {
-					robots.remove(i);
-					i--;
-				}
-			}
+    }
 
-			// 2. 가장 먼저 벨트에 올라간 로봇부터,
-			// 벨트가 회전하는 방향으로 한 칸 이동할 수 있다면 이동한다. 만약 이동할 수 없다면 가만히 있는다.
-			for (int i = 0; i < robots.size(); i++) {
+    public static void function1(int N, ArrayList<Data> arrayList) {
+        arrayList.add(0, arrayList.remove(arrayList.size() - 1));
+        arrayList.get(N - 1).robot = false;
+    }
 
-				// 앞칸에 내구도가 있어
-				if (arr[robots.get(i).index + 1] > 0) {
-					// 내가 최초 로봇이다! || 내 앞에 로봇이 있는데 ㄱㅊ
-					if (i == 0 || robots.get(i).index + 1 != robots.get(i - 1).index) {
-						robots.get(i).index++;
-						arr[robots.get(i).index]--;
-						if (arr[robots.get(i).index] == 0) {
-							durability_count++;
-						}
+    public static void function2(int N, ArrayList<Data> arrayList) {
+        for (int i = N - 2; i >= 0; i--) {
+            if (arrayList.get(i + 1).naegudo > 0 && arrayList.get(i).robot && !arrayList.get(i + 1).robot) {
+                arrayList.get(i).robot = false;
+                arrayList.get(i + 1).robot = true;
+                arrayList.get(i + 1).naegudo--;
+            }
+        }
 
-					}
-				}
+        arrayList.get(N - 1).robot = false;
+    }
 
-				// 이동 시켰더니 막칸이네 넌 내려가라
-				if (robots.get(i).index == N - 1) {
-					robots.remove(i);
-					i--;
-				}
-			}
+    public static void function3(int N, ArrayList<Data> arrayList) {
+        if (arrayList.get(0).naegudo > 0) {
+            arrayList.get(0).robot = true;
+            arrayList.get(0).naegudo--;
+        }
+    }
 
-			if (arr[0] != 0) {
-				robots.add(new Robot());
-				arr[0]--;
-				if (arr[0] == 0)
-					durability_count++;
-			}
-
-			if (durability_count >= K)
-				break;
-		}
-
-		System.out.println(answer);
-
-	}
-
-	public static void rotate(int[] arr) {
-		int now;
-		int prev = arr[0];
-		arr[0] = arr[arr.length - 1];
-		for (int i = 0; i < arr.length - 1; i++) {
-			now = arr[i + 1];
-			arr[i + 1] = prev;
-			prev = now;
-		}
-
-	}
+    public static int function4(int N, ArrayList<Data> arrayList) {
+        int k = 0;
+        for(int i =0 ; i< arrayList.size(); i++){
+            if(arrayList.get(i).naegudo == 0)
+                k++;
+        }
+        return k;
+    }
 }
