@@ -1,0 +1,28 @@
+SELECT
+    SUM(G.SCORE) AS SCORE,
+    G.EMP_NO,
+    DE.EMP_NAME,
+    DE.POSITION,
+    DE.EMAIL
+FROM
+    HR_GRADE AS G
+INNER JOIN
+    (
+    SELECT
+        E.*,
+        D.DEPT_NAME_KR,
+        D.DEPT_NAME_EN,
+        D.LOCATION
+    FROM
+        HR_DEPARTMENT AS D
+    INNER JOIN
+        HR_EMPLOYEES AS E ON D.DEPT_ID = E.DEPT_ID        
+    ) AS DE ON G.EMP_NO = DE.EMP_NO
+WHERE
+    G.YEAR = 2022
+GROUP BY
+    G.EMP_NO
+ORDER BY
+    SCORE DESC
+LIMIT  
+    1
