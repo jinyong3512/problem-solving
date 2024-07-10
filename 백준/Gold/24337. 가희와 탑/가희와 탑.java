@@ -68,15 +68,12 @@ public class Main {
             }
         }
 
-        if (countA == a && countB == b)
-            arrPrint(arr);
-        else
-            System.out.println("-1");
-    }
+        if (countA == a && countB == b) {
+            for (int i = 0; i < arr.length; i++)
+                sb.append(arr[i]).append(" ");
+        } else
+            sb.append("-1");
 
-    public static void arrPrint(int[] arr) {
-        for (int i = 0; i < arr.length; i++)
-            System.out.print(arr[i] + " ");
-        System.out.println();
+        System.out.println(sb);
     }
 }
