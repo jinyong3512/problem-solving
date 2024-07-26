@@ -7,51 +7,44 @@ public class Main {
         StringBuilder sb = new StringBuilder();
         StringTokenizer st;
 
-        int N;
-        int[] heights;
+        int N = Integer.parseInt(br.readLine());
 
-        N = Integer.parseInt(br.readLine());
-        heights = new int[N];
-
+        int[] heights = new int[N];
         st = new StringTokenizer(br.readLine());
-        for (int i = 0; i < heights.length; i++)
+        for (int i = 0; i < N; i++)
             heights[i] = Integer.parseInt(st.nextToken());
 
-        ////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////
 
-        int[] answers = new int[heights.length];
-        for (int i = 0; i < heights.length; i++) {
+        int[] answers = new int[N];
 
-            // 오른쪽으로 검사
-            double rightMaxAngle = Integer.MIN_VALUE;
-            for (int j = i + 1; j < heights.length; j++) {
-                double rightTmpAngle = (double) (heights[j] - heights[i]) / (j - i);
+        for (int i = 0; i < N; i++) {
 
-                if (rightTmpAngle > rightMaxAngle) {
-                    answers[i]++;
-                    rightMaxAngle = rightTmpAngle;
-                }
-            }
-
-            // 왼쪽으로 검사
-            double leftMinAngle = Integer.MAX_VALUE;
+            double minSlope = Integer.MAX_VALUE;
             for (int j = i - 1; j >= 0; j--) {
-                double leftTmpAngle = (double) (heights[i] - heights[j]) / (i - j);
+                double curSlope = (double) (heights[i] - heights[j]) /(i - j);
 
-                if (leftTmpAngle < leftMinAngle) {
+                if(minSlope > curSlope){
                     answers[i]++;
-                    leftMinAngle = leftTmpAngle;
+                    minSlope = curSlope;
                 }
             }
 
+            double maxSlope = Integer.MIN_VALUE;
+            for (int j = i + 1; j < N; j++) {
+                double curSlope = (double) (heights[j] - heights[i]) /(j - i);
+
+                if(maxSlope < curSlope){
+                    answers[i]++;
+                    maxSlope = curSlope;
+                }
+            }
         }
 
         int answer = 0;
-        for (int i = 0; i < answers.length; i++) {
-            answer = Math.max(answer, answers[i]);
-        }
+        for(int value:answers)
+            answer = Math.max(answer,value);
         System.out.println(answer);
-
 
     }
 }
