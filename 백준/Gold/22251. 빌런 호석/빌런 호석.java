@@ -49,10 +49,19 @@ public class Main {
         int P = Integer.parseInt(st.nextToken());
         int X = Integer.parseInt(st.nextToken());
 
+
+//        solve1(useChances, N, K, P, X);
+        solve2(useChances, N, K, P, X);
+
+    }
+
+    public static void solve1(int[][] useChances, int N, int K, int P, int X) {
+
         Deque<String> deque = new ArrayDeque<>();
         recursion(N, K, P, X, 0, useChances, deque);
 
-        System.out.println(answer-1);
+        System.out.println(answer - 1);
+
     }
 
     public static void recursion(int N, int K, int P, int X, int depth, int[][] useChances, Deque<String> deque) {
@@ -76,5 +85,37 @@ public class Main {
                 deque.removeLast();
             }
         }
+    }
+
+    public static void solve2(int[][] useChances, int N, int K, int P, int X) {
+
+
+        int answer = 0;
+        for (int i = 1; i <= N; i++) {
+            if (i == X)
+                continue;
+
+            String XStr = String.valueOf(X);
+            String curNumber = String.valueOf(i);
+
+            int gap = Math.abs(XStr.length() - curNumber.length());
+            for (int j = 0; j < gap; j++) {
+                if (XStr.length() > curNumber.length())
+                    curNumber = "0" + curNumber;
+                else if (XStr.length() < curNumber.length())
+                    XStr = "0" + XStr;
+            }
+
+            int curP = 0;
+            for (int j = 0; j < XStr.length(); j++) {
+                curP += useChances[XStr.charAt(j) - '0'][curNumber.charAt(j) - '0'];
+            }
+
+            if (curP <= P)
+                answer++;
+
+        }
+        System.out.println(answer);
+
     }
 }
