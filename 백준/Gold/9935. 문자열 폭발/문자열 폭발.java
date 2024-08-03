@@ -7,69 +7,61 @@ public class Main {
         StringBuilder sb = new StringBuilder();
         StringTokenizer st;
 
-        String str;
-        String bombStr;
+        String input = br.readLine();
+        String bomb = br.readLine();
 
-        str = br.readLine();
-        bombStr = br.readLine();
+        /////////////////////////////
 
-        //////////////////////////////////////////////////////
+        Deque<Character> start = new ArrayDeque<>();
+        Deque<Character> end = new ArrayDeque<>();
 
-        Deque<Character> strDeque = new ArrayDeque<>();
-        Deque<Character> tmpDeque = new ArrayDeque<>();
-        Deque<Character> answerDeque = new ArrayDeque<>();
+        for (int i = 0; i < input.length(); i++)
+            start.addLast(input.charAt(i));
+        
+        ///////////////////////////////////////////
 
-        for (int i = 0; i < str.length(); i++) {
-            strDeque.addLast(str.charAt(i));
-        }
+        while (!start.isEmpty()) {
+            int i = 0;
+            for (; i < bomb.length(); i++) {
+                if (start.isEmpty())
+                    break;
 
-
-        while (strDeque.size() >= bombStr.length()) {
-
-            boolean can = true;
-            for (int i = 0; i < bombStr.length(); i++) {
-                if (strDeque.peekFirst() == bombStr.charAt(i)) {
-
-                } else {
-                    can = false;
+                end.addLast(start.peekFirst());
+                if (start.removeFirst() != bomb.charAt(i)) {
+                    break;
                 }
-                tmpDeque.addLast(strDeque.removeFirst());
             }
 
-            if (can) {
-
-                tmpDeque.clear();
-
-                for (int i = 0; i < bombStr.length(); i++) {
-                    if(answerDeque.isEmpty()){
+            if (i == bomb.length()) {
+                
+                // 다르다
+                for (int j = 0; j < bomb.length(); j++)
+                    end.removeLast();
+                
+                // 같다
+                for (int j = 0; j < bomb.length(); j++) {
+                    if (end.isEmpty()) {
                         break;
-                    }else{
-                        strDeque.addFirst(answerDeque.removeLast());
+                    } else {
+                        start.addFirst(end.removeLast());
                     }
                 }
-
             } else {
-                answerDeque.addLast(tmpDeque.removeFirst());
-
-                while (!tmpDeque.isEmpty()) {
-                    strDeque.addFirst(tmpDeque.removeLast());
+                if(start.isEmpty())
+                    break;
+                // 같다
+                for (int j = 0; j < i; j++) {
+                    start.addFirst(end.removeLast());
                 }
             }
 
-
         }
 
-        while(!strDeque.isEmpty()){
-            answerDeque.addLast(strDeque.removeFirst());
-        }
-
-        if(answerDeque.isEmpty()){
-            System.out.println("FRULA");
-        }else{
-            while(!answerDeque.isEmpty())
-                sb.append(answerDeque.removeFirst());
-            System.out.println(sb);
-        }
+        if (end.isEmpty())
+            sb.append("FRULA");
+        while (!end.isEmpty())
+            sb.append(end.removeFirst());
+        System.out.println(sb);
 
 
     }
