@@ -3,7 +3,7 @@ import java.util.*;
 
 public class Main {
 
-    public static String answer = "";
+    public static boolean find = false;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -20,39 +20,28 @@ public class Main {
 
         /////////////////////////////////////////
 
+        Arrays.sort(arr);
+
         boolean[] visited = new boolean[N];
-        Deque<String> deque = new ArrayDeque<>();
-        permutation(L, N, arr, visited, 0, deque);
+        char[][] answer = new char[L][L];
+        permutation(L, N, arr, visited, 0, answer);
 
-        for(int i = 0 ; i < answer.length() ; i++){
-            if(i != 0 && i%L ==0)
+        if(!find)
+            System.out.println("NONE");
+        else{
+            for(int i =0 ; i < L ; i++){
+                for(int j =0 ; j < L ; j++)
+                    sb.append(answer[i][j]);
                 sb.append("\n");
-            sb.append(answer.charAt(i));
+            }
+            System.out.println(sb);
         }
-
-        if(sb.length()==0)
-            sb.append("NONE");
-        System.out.println(sb);
 
     }
 
-    public static void permutation(int L, int N, String[] arr, boolean[] visited, int depth, Deque<String> deque) {
-
+    public static void permutation(int L, int N, String[] arr, boolean[] visited, int depth, char[][] answer) {
         if (depth == L) {
-
-            if (can(L, deque)) {
-
-                String curStr = "";
-                for (String value : deque)
-                    curStr += value;
-
-                if (answer.isEmpty())
-                    answer = curStr;
-                else if (answer.compareTo(curStr) > 0)
-                    answer = curStr;
-
-            }
-
+            find = true;
             return;
         }
 
@@ -60,33 +49,31 @@ public class Main {
             if (visited[i])
                 continue;
 
-            visited[i] = true;
-            deque.addLast(arr[i]);
-            permutation(L, N, arr, visited, depth + 1, deque);
-            deque.removeLast();
-            visited[i] = false;
-        }
+            boolean can = true;
 
-
-    }
-
-    public static boolean can(int L, Deque<String> deque) {
-
-        char[][] curArr = new char[L][L];
-
-        int i = 0;
-        for (String value : deque) {
-            for (int j = 0; j < L; j++)
-                curArr[i][j] = value.charAt(j);
-            i++;
-        }
-
-        for (int t = 0; t < L; t++) {
-            for (int k = 0; k < L; k++) {
-                if (curArr[t][k] != curArr[k][t])
-                    return false;
+            for (int k = 0; k < depth; k++) {
+                if (arr[i].charAt(k) != answer[k][depth])
+                    can = false;
             }
+
+            if (can) {
+                for (int j = 0; j < L; j++) {
+                    answer[depth][j] = arr[i].charAt(j);
+                }
+                visited[i] = true;
+                permutation(L, N, arr, visited, depth + 1, answer);
+
+                if(find)
+                    return;
+
+                for (int j = 0; j < L; j++) {
+                    answer[depth][j] = '0';
+                }
+                visited[i] = false;
+            }
+
         }
-        return true;
+
+
     }
 }
