@@ -21,58 +21,42 @@ public class Main {
 
         /////////////////////////////////////////
 
-        int[][] map = new int[M][M];
-        for (int i = 0; i < M; i++) {
-            for (int j = 0; j < M; j++) {
-                map[i][j] = 1;
-            }
+        int[] arr = new int[2 * M];
+
+        for (int i = 0; i < N; i++) {
+
+            arr[0] += 0;
+            arr[grows[i][0]] -= 0;
+
+            arr[grows[i][0]] += 1;
+            arr[grows[i][0] + grows[i][1]] -= 1;
+
+            arr[grows[i][0] + grows[i][1]] += 2;
+            arr[2*M-1] -=2;
         }
 
-        // 490,000 M*M
-        // 10^6 N
-
-        for (int n = 0; n < N; n++) {
-            int[] grow = grows[n];
-
-            int[] curGrow = new int[2 * M - 1];
-            int curGrowIndex = 0;
-            for (int i = 0; i < grow[0]; i++)
-                curGrow[curGrowIndex++] = 0;
-            for (int i = 0; i < grow[1]; i++)
-                curGrow[curGrowIndex++] = 1;
-            for (int i = 0; i < grow[2]; i++)
-                curGrow[curGrowIndex++] = 2;
-
-            int y = M - 1;
-            int x = 0;
-
-            for (int i = 0; i < curGrow.length; i++) {
-                map[y][x] += curGrow[i];
-                if (y == 0)
-                    x++;
-                else
-                    y--;
-            }
-
-            y = 1;
-            x = 1;
-            for (; x < M; x++) {
-                map[y][x] += curGrow[curGrow.length / 2 + x];
-            }
-
+        int[] result = new int[2 * M - 1];
+        result[0] = arr[0] + 1;
+        for (int i = 1; i < result.length; i++) {
+            result[i] = result[i - 1] + arr[i];
         }
 
-        for (int y = 0; y < M; y++) {
-            for (int x = 0; x < M; x++) {
-                if( y >= 2 && x >= 1){
-                    sb.append(map[1][x]).append(" ");
-                }
-                else
-                    sb.append(map[y][x]).append(" ");
+        for (int j = 0; j < M; j++) {
+            sb.append(result[result.length / 2 + j]).append(" ");
+        }
+        sb.append("\n");
+
+        for (int i = 1; i < M; i++) {
+
+            sb.append(result[result.length / 2 - i]).append(" ");
+
+            for (int j = 1; j < M; j++) {
+                sb.append(result[result.length / 2 + j]).append(" ");
             }
             sb.append("\n");
         }
         System.out.println(sb);
+
 
     }
 }
