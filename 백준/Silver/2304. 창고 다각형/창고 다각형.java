@@ -7,44 +7,51 @@ public class Main {
         StringBuilder sb = new StringBuilder();
         StringTokenizer st;
 
-        // 10:38
+        int N = Integer.parseInt(br.readLine());
 
-        boolean[][] visited = new boolean[1000][1000];
-
-        int N;
-
-        N = Integer.parseInt(br.readLine());
+        // 1이상 1000이하
+        boolean[][] exists = new boolean[1001][1001];
 
         for (int i = 0; i < N; i++) {
             st = new StringTokenizer(br.readLine());
-            int x = Integer.parseInt(st.nextToken())-1;
-            int y = Integer.parseInt(st.nextToken());
+            int L = Integer.parseInt(st.nextToken());
+            int H = Integer.parseInt(st.nextToken());
 
-            for (int h = 0; h < y; h++) {
-                visited[h][x] = true;
+            for (int y = 1; y <= H; y++) {
+                exists[y][L] = true;
             }
+
         }
+
+        /////////////////////////////////////////////
 
         int answer = 0;
 
-        for (int i = 0; i < 1000; i++) {
-            int leftIndex = 0;
-            int rightIndex = 999;
+        for (int y = 1; y <= 1000; y++) {
 
-            for (; leftIndex < 1000; leftIndex++) {
-                if (visited[i][leftIndex])
+            int left = 1;
+            int right = 1000;
+
+            while (left <= 1000) {
+                if (exists[y][left])
                     break;
+                left++;
             }
 
-            for (; rightIndex >= 0; rightIndex--) {
-                if (visited[i][rightIndex])
+            while (right >= 1) {
+                if (exists[y][right])
                     break;
+                right--;
             }
 
-            if(leftIndex > rightIndex)
+            if (left == 1001)
                 continue;
+            else if (right == left) {
+                answer += 1;
+            } else
+                answer += (right - left + 1);
 
-            answer += (rightIndex - leftIndex +1);
+
         }
 
         System.out.println(answer);
