@@ -15,20 +15,12 @@ class Solution {
             if (commands[i].equals("prev")) {
                 now -= 10;
                 
-                // now: 109 -> 99 -> 59
-                if (now % 100 >= 60)
-                    now -= 40;
-                
                 // now: 2 -> -8 -> 0
                 if (now < 0) 
                     now = 0;
                 
             } else {
                 now += 10;
-                
-                // now: 159 -> 169 -> 209
-                if (now % 100 >= 60) 
-                    now += 40;
                 
                 // now: 
                 if (now > convert_string_to_int(video_len))
@@ -42,11 +34,11 @@ class Solution {
         if (convert_string_to_int(op_start) <= now && now <= convert_string_to_int(op_end))
             now = convert_string_to_int(op_end);    
         
-        sb.append(now/1000);
-        sb.append(now/100%10);
+        sb.append(now/60/10);
+        sb.append(now/60%10);
         sb.append(":");
-        sb.append(now/10%10);
-        sb.append(now/1%10);
+        sb.append(now%60/10);
+        sb.append(now%60%10);
         
         return sb.toString();
     }
@@ -55,6 +47,6 @@ class Solution {
         int str_mm = Integer.parseInt(str.substring(0,2));
         int str_ss = Integer.parseInt(str.substring(3,5));
         
-        return str_mm * 100 + str_ss;
+        return str_mm * 60 + str_ss;
     }
 }
