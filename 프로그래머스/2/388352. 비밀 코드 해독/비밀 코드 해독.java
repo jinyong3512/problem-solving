@@ -1,52 +1,51 @@
 class Solution {
     
     public static int answer = 0;
+    public static boolean[] visited;
     
-    public int solution(int n, int[][] q, int[] ans) {   
-        int[] qIndexs = new int [q.length];
-        dfs(n, q, ans, 1, qIndexs, ans, 0);
+    public int solution(int n, int[][] q, int[] ans) {        
+        visited = new boolean[n + 1];
+        dfs(n, q, ans, 1, 0);
         return answer;
     }
     
-    public void dfs(int n, int[][] q, int[] ans, int curN, int[] curQIndexs, int[] curAns, int curDepth) {
-        if (curDepth == 5) {
-            for (int curAn: curAns){
-                if (curAn != 0)
-                    return;
-            }
-            answer++;
+    public void dfs(int n, int[][] q, int[] ans, int curN, int depth) {
+        if (depth == 5) {
+            int[] newAns = new int[ans.length];
+            for (int i = 0; i < newAns.length; i++)
+                newAns[i] = ans[i];
+                
+            if (can(n, q, newAns))
+                answer++;
+            
             return;
         }
         
         if (curN > n)
             return;
         
-        // nTmp를 정답으로 만들 경우
-        int[] newQIndexs = new int[curAns.length];
-        for (int i = 0; i < newQIndexs.length; i++)
-            newQIndexs[i] = curQIndexs[i];
+        visited[curN] = true;
+        dfs(n, q, ans, curN + 1, depth + 1);
+        visited[curN] = false;
         
-        int[] newAns = new int[curAns.length];
-        for (int i = 0; i < newAns.length; i++)
-            newAns[i] = curAns[i];
+        dfs(n, q, ans, curN + 1, depth);
         
-        for (int i = 0; i < newAns.length; i++) {
-            if (newQIndexs[i] == 5)
-                continue;
-            
-            if (curN < q[i][newQIndexs[i]]) {
-                
-            } else if (curN == q[i][newQIndexs[i]]) {
-                newAns[i]--;
-                newQIndexs[i]++;
-            } else {
-                newQIndexs[i]++;
-                i--;
-            }                
+    }
+    
+    public boolean can(int n, int[][] q, int[] ans) {
+        for (int i = 0; i < q.length; i++) {            
+            for (int j = 0; j < q[0].length; j++) {
+                if (visited[q[i][j]]) {
+                   ans[i]--; 
+                }
+            }
         }
-        dfs(n, q, ans, curN + 1, newQIndexs, newAns, curDepth + 1);
         
-        // nTmp를 정답으로 만들지 않을 경우        
-        dfs(n, q, ans, curN + 1, curQIndexs, curAns, curDepth);
+        for (int i = 0; i < ans.length; i++) {
+            if (ans[i] != 0)
+                return false;
+        }
+        return true;
+            
     }
 }
