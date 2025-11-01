@@ -12,18 +12,20 @@ class Solution {
         
         ArrayList<ArrayList<Edge>> graph = new ArrayList<>();
         
+        int maxVertexNumber = 0;
+        
+        for (int edgesIndex = 0; edgesIndex < edges.length; edgesIndex++) {
+            maxVertexNumber = Math.max(maxVertexNumber, edges[edgesIndex][0]);
+            maxVertexNumber = Math.max(maxVertexNumber, edges[edgesIndex][1]);
+        }
+        
+        for (int i = 0; i <= maxVertexNumber; i++) {
+            graph.add(new ArrayList<>());
+        }
+        
         for (int edgesIndex = 0; edgesIndex < edges.length; edgesIndex++) {
             int from = edges[edgesIndex][0];
-            int to = edges[edgesIndex][1];
-                        
-            if (graph.size() < Math.max(from, to) + 1) {
-                for (int i = graph.size(); i < Math.max(from, to) + 1; i++) {                    
-                    Edge newEdge = new Edge(i);
-                    ArrayList<Edge> arrayList = new ArrayList<>();
-                    graph.add(arrayList);
-                }
-            }
-            
+            int to = edges[edgesIndex][1];            
             graph.get(from).add(new Edge(to));
         }
         
@@ -45,41 +47,42 @@ class Solution {
         // System.out.printf("startVertex: %d\n", startVertex);
         
         int[] answer = new int[4];
-        answer[0] = startVertex;
+        answer[0] = startVertex;    
+        
+        boolean[] visited = new boolean[graph.size()];
         
         for (int i = 0; i < graph.get(startVertex).size(); i++) {
-            answer[check(graph, graph.get(startVertex).get(i).to)]++;
+            answer[check(graph, graph.get(startVertex).get(i).to, visited)]++;
         }
         
         return answer;
     }
     
-    public int check(ArrayList<ArrayList<Edge>> graph, int startVertex) {
-                
-        HashMap<Integer, Boolean> hashMap = new HashMap<>();
-        hashMap.put(startVertex, true);
-               
+    public int check(ArrayList<ArrayList<Edge>> graph, int startVertex, boolean[] visited) { 
         Queue<Integer> queue = new LinkedList<>();
+        
+        visited[startVertex] = true;
         queue.add(startVertex);
         
+        int vertexCount = 1;
         int edgeCount = 0;
         
         while (!queue.isEmpty()) {
             int curVertex = queue.remove();
             
             for (int i = 0; i < graph.get(curVertex).size(); i++) {
-                edgeCount++;
                 int nextVertex = graph.get(curVertex).get(i).to;
                 
-                if (hashMap.containsKey(nextVertex))
+                edgeCount++;
+                
+                if (visited[nextVertex])
                     continue;
                 
-                hashMap.put(nextVertex, true);                
-                queue.add(nextVertex);                
+                visited[nextVertex] = true;
+                queue.add(nextVertex);
+                vertexCount++;
             }
         }
-        
-        int vertexCount = hashMap.size();
         
         // System.out.printf("startVertex: %d, vertexCount: %d, edgeCount: %d\n", startVertex, vertexCount, edgeCount);
         // n n
