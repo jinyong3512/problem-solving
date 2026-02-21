@@ -1,26 +1,27 @@
--- 코드를 입력하세요
+# 서울에 위치한 식당들
+# 식당 ID, 식당 이름, 음식 종류, 즐겨찾기수, 주소, 리뷰 평균 점수를 조회
 
--- 식당 ID, 식당 이름, 음식 종류, 즐겨찾기수, 주소, 리뷰 평균 점수
-SELECT 
-    C.REST_ID
-  , C.REST_NAME
-  , C.FOOD_TYPE
-  , C.FAVORITES
-  , C.ADDRESS
-  , B.REVIEW_SCORE2
-  FROM 
-    REST_INFO C
-INNER JOIN 
+SELECT
+    I.REST_ID AS REST_ID,
+    I.REST_NAME AS REST_NAME,
+    I.FOOD_TYPE AS FOOD_TYPE,
+    I.FAVORITES AS FAVORITES,
+    I.ADDRESS AS ADDRESS,
+    ROUND(R.AVG_REVIEW_SCORE,2) AS SCORE
+FROM
+    REST_INFO AS I
+INNER JOIN
     (
     SELECT
-        A.REST_ID
-      , ROUND(AVG(A.REVIEW_SCORE), 2) AS REVIEW_SCORE2
+        REST_ID,
+        AVG(REVIEW_SCORE) AS AVG_REVIEW_SCORE
     FROM
-        REST_REVIEW A
+        REST_REVIEW
     GROUP BY
-        A.REST_ID    
-    ) B ON C.REST_ID = B.REST_ID
+        REST_ID
+    ) AS R ON I.REST_ID = R.REST_ID
 WHERE
-    SUBSTR(C.ADDRESS, 1, 2) = '서울'
+    I.ADDRESS LIKE '서울%'
 ORDER BY
-    B.REVIEW_SCORE2 DESC, C.FAVORITES DESC;
+    R.AVG_REVIEW_SCORE DESC,
+    FAVORITES DESC
