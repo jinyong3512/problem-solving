@@ -1,69 +1,87 @@
 import java.util.*;
 
-class Data {
-    int vertexNumber;
-    int depth;
-    Data (int vertexNumber, int depth) {
-        this.vertexNumber = vertexNumber;
-        this.depth = depth;
-    }
-}
-
 class Solution {
+    
+    private static class VertexDistanceData {
+        private final int vertexNumber;
+        private final int distance;
+
+        VertexDistanceData (int vertexNumber, int distance) {
+            this.vertexNumber = vertexNumber;
+            this.distance = distance;
+        }
+
+        int getVertexNumber() {
+            return vertexNumber;
+        }
+
+        int getDistance() {
+            return distance;
+        }
+    }
+    
     public int solution(int n, int[][] edge) {
+                       
+        ArrayList<ArrayList<Integer>> graph = createGraph(n, edge);
+                
+        int[] distances = calculateDistances(graph, 1);
+        
+        int answer = calculateAnswer(distances);
+        
+        return answer;
+    }
+    
+    private ArrayList<ArrayList<Integer>> createGraph(int n, int[][] edge) {
+        ArrayList<ArrayList<Integer>> graph = new ArrayList<>();
+        
+        for (int i = 0; i <= n; i++) {            
+            graph.add(new ArrayList<>());
+        }
+        
+        for (int[] e: edge) {
+            graph.get(e[0]).add(e[1]);
+            graph.get(e[1]).add(e[0]);
+        }
+        
+        return graph;
+    }
+    
+    private int[] calculateDistances(ArrayList<ArrayList<Integer>> graph, int startVertexNumber) {
+        int[] distances = new int[graph.size()];
+        for (int i = 0; i < distances.length; i++)
+            distances[i] = -1;
+        distances[startVertexNumber] = 0;
+        
+        Deque<VertexDistanceData> deque = new ArrayDeque<>();
+        deque.addLast(new VertexDistanceData(1, 0));
+        
+        while (!deque.isEmpty()) {
+            VertexDistanceData curVDD = deque.removeFirst();
+            
+            for (int i = 0; i < graph.get(curVDD.getVertexNumber()).size(); i++) {
+                int nextVertexNumber = graph.get(curVDD.getVertexNumber()).get(i);
+                
+                if (distances[nextVertexNumber] != -1)
+                    continue;                                
+                distances[nextVertexNumber] = curVDD.getDistance() + 1;
+                
+                deque.addLast(new VertexDistanceData(nextVertexNumber, curVDD.getDistance() + 1));
+            }
+        }
+        
+        return distances;
+    }
+    
+    private int calculateAnswer(int[] distances) {            
         int answer = 0;
         
-        // Create graph
-        ArrayList<ArrayList<Integer>> graph = new ArrayList<>();
-        for (int i = 0; i <= n; i++) {
-            ArrayList<Integer> tmpArrayList = new ArrayList<>();
-            graph.add(tmpArrayList);
-        }
-        
-        for (int i = 0; i < edge.length; i++) {
-            graph.get(edge[i][0]).add(edge[i][1]);
-            graph.get(edge[i][1]).add(edge[i][0]);
-        }
-        
-        // 
-        int[] depths = new int[n + 1];
-        
-        boolean[] visited = new boolean[n + 1];
-        visited[1] = true;
-        
-        Queue<Data> queue = new LinkedList<>();
-        queue.add(new Data(1, 0));
-        
-        while (!queue.isEmpty()) {
-            Data curData = queue.remove();
-            
-            for (int i = 0; i < graph.get(curData.vertexNumber).size(); i++) {
-                int nextVertexNumber = graph.get(curData.vertexNumber).get(i);
-                
-                if (visited[nextVertexNumber])
-                    continue;
-                
-                visited[nextVertexNumber] = true;
-                depths[nextVertexNumber] = curData.depth + 1;
-                
-                queue.add(new Data(nextVertexNumber, curData.depth + 1));
-            }
-        }
-        
-        // for (int i = 1; i <= n; i++) {
-        //     System.out.printf("%d ", depths[i]);
-        // }
-        
         int maxDistance = 0;
-        for (int i = 2; i <= n; i++) {
-            if (maxDistance > depths[i])
-                continue;
-            else if (maxDistance == depths[i])
-                answer++;
-            else {
+        for (int distance: distances) {
+            if (distance > maxDistance) {
+                maxDistance = distance;
                 answer = 1;
-                maxDistance = depths[i];
-            }
+            } else if (distance == maxDistance)
+                answer++;
         }
         
         return answer;
