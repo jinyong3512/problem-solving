@@ -1,27 +1,17 @@
-SELECT
-    X.CAR_ID,
-    IF(Y.CAR_ID IS NULL,'대여 가능','대여중') AS AVAILABILITY
-FROM
-    (
-    SELECT
-        CAR_ID
-    FROM
-        CAR_RENTAL_COMPANY_RENTAL_HISTORY
-    GROUP BY
-        CAR_ID
-    ) AS X
-LEFT JOIN
-    (
-    SELECT
-        CAR_ID
-    FROM
-        CAR_RENTAL_COMPANY_RENTAL_HISTORY
-    WHERE
-        DATE_FORMAT(START_DATE,'%Y-%m-%d') <= '2022-10-16'
-        AND
-        DATE_FORMAT(END_DATE,'%Y-%m-%d') >= '2022-10-16'
-    GROUP BY
-        CAR_ID
-    ) AS Y ON X.CAR_ID = Y.CAR_ID
+SELECT 
+    CAR_ID,
+    CASE
+        WHEN CAR_ID IN (
+            SELECT
+                CAR_ID
+            FROM CAR_RENTAL_COMPANY_RENTAL_HISTORY 
+            WHERE
+                TO_CHAR(START_DATE, 'YYYY-MM-DD') <= '2022-10-16' AND
+                TO_CHAR(END_DATE, 'YYYY-MM-DD') >= '2022-10-16'
+        ) THEN '대여중'
+        ELSE '대여 가능'
+    END AS AVAILABILITY 
+FROM CAR_RENTAL_COMPANY_RENTAL_HISTORY
+GROUP BY CAR_ID
 ORDER BY
-    X.CAR_ID DESC
+    CAR_ID DESC;
