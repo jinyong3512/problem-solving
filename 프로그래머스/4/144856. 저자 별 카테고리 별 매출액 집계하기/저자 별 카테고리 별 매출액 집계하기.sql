@@ -1,24 +1,33 @@
-SELECT
-    B.AUTHOR_ID AS AUTHOR_ID,
-    A.AUTHOR_NAME AS AUTHOR_NAME,
-    B.CATEGORY AS CATEGORY,
-    SUM(B.PRICE*BS.SALES) AS TOTAL_SALES
-FROM
-    (
-    SELECT
-        BOOK_ID,
-        SALES
-    FROM
-        BOOK_SALES
-    WHERE
-        DATE_FORMAT(SALES_DATE,'%Y-%m') = '2022-01'    
-    ) AS BS
-INNER JOIN
-    BOOK AS B ON BS.BOOK_ID = B.BOOK_ID
-INNER JOIN
-    AUTHOR AS A ON B.AUTHOR_ID = A.AUTHOR_ID
+SELECT     
+    author_id,
+    author_name,
+    category,
+    SUM(col1) AS total_sales
+FROM ( 
+    SELECT 
+        B.author_id,
+        A.author_name,
+        B.category,
+        B.price * BS2.sum_sales AS col1
+    FROM BOOK B
+    INNER JOIN AUTHOR A
+        ON B.author_id = A.author_id
+    INNER JOIN (
+        SELECT
+            book_id,
+            SUM(sales) AS sum_sales
+        FROM BOOK_SALES
+        WHERE 
+            TO_CHAR(sales_date, 'YYYY-MM') = '2022-01'
+        GROUP BY 
+            book_id
+    ) BS2
+        ON B.book_id = BS2.book_id
+)
 GROUP BY
-    B.AUTHOR_ID,B.CATEGORY,A.AUTHOR_NAME
+    author_id,
+    author_name,
+    category
 ORDER BY
-    AUTHOR_ID ASC,
-    CATEGORY DESC
+    author_id ASC,
+    category DESC
