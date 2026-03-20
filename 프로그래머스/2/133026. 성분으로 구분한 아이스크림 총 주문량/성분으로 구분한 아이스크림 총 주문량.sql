@@ -1,15 +1,10 @@
 SELECT
-    # *,
-    B.INGREDIENT_TYPE AS INGREDIENT_TYPE,
-    SUM(A.TOTAL_ORDER) AS TOTAL_ORDER
-    
-FROM 
-    FIRST_HALF AS A
-INNER JOIN
-    ICECREAM_INFO AS B ON A.FLAVOR = B.FLAVOR
-    
-GROUP BY
-    B.INGREDIENT_TYPE
-    
+    II.ingredient_type,
+    SUM(FH.total_order) AS total_order
+FROM FIRST_HALF FH
+INNER JOIN ICECREAM_INFO II
+    ON FH.flavor = II.flavor
+GROUP BY 
+    II.ingredient_type
 ORDER BY
-    TOTAL_ORDER ASC;
+    total_order ASC;
