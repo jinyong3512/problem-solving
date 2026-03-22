@@ -1,33 +1,31 @@
 class Solution {
-    public long solution(int n, int[] times) {        
+    public long solution(int n, int[] times) {
+        /// 5556667777 이런식이고 lowerBound 쪽 구하기
         return lowerBound(n, times);
     }
+    
     public long lowerBound(int n, int[] times) {
-        
-        int maxTime = 0;
-        for (int time: times)
-            maxTime = Math.max(maxTime, time);
-        
         long left = 1;
-        long right = (long) n * (long) maxTime;
-        System.out.println(right);
+        long right = 1000000000L * 1000000000;
         
-        while (left <= right) {
-            long mid = (left + right) / 2;
+        while (left < right) {
+            // long mid = (left + right) / 2;
+            long mid = left + (right - left) / 2;
             
-            long count = 0;
+            long p = 0;
+            for (int time: times) {
+                p += mid / time;
+                // mid = Long.MAX_VALUE;
+                // time 1 짜리가  100,000명 
+            }
             
-            for (int time: times)
-                count += mid / time;
-            
-            if (count > n) {
-                right = mid - 1;
-            } else if (count == n) {
-                right = mid - 1;
+            if (p > n) {
+                right = mid;
+            } else if (p == n) {
+                right = mid;
             } else {
                 left = mid + 1;
             }
-            System.out.printf("%d, %d\n",mid, count);
         }
         
         return left;
