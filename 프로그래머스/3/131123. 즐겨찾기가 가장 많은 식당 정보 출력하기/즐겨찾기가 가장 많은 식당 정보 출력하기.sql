@@ -1,21 +1,19 @@
--- 코드를 입력하세요
-
+-- 음식종유별로 가장큰 즐겨찾기수 
 SELECT
-    A.FOOD_TYPE,
-    A.REST_ID,
-    A.REST_NAME,
-    A.FAVORITES
-FROM 
-    REST_INFO AS A
-INNER JOIN
-    (
-    SELECT 
-        FOOD_TYPE,
-        MAX(FAVORITES) AS MAX_FAVORITES
-    FROM 
-        REST_INFO
+    RI1.food_type,
+    RI1.rest_id,
+    RI1.rest_name,
+    RI1.favorites
+FROM REST_INFO RI1
+INNER JOIN (
+    SELECT
+        food_type,
+        MAX(favorites) max_favorites
+    FROM REST_INFO
     GROUP BY
-        FOOD_TYPE
-    ) AS B ON (A.FOOD_TYPE = B.FOOD_TYPE AND A.FAVORITES = B.MAX_FAVORITES)
+        food_type
+) RI2
+    ON RI1.food_type = RI2.food_type AND
+    RI1.favorites = RI2.max_favorites
 ORDER BY
-    FOOD_TYPE DESC
+    RI1.food_type DESC;
