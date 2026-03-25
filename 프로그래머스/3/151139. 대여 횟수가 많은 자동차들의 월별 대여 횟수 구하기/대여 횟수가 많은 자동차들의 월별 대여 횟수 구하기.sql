@@ -1,26 +1,27 @@
 SELECT
-    EXTRACT(MONTH FROM A.START_DATE) AS MONTH,
-    A.CAR_ID, 
-    COUNT(*) AS RECORDS
-FROM
-    CAR_RENTAL_COMPANY_RENTAL_HISTORY AS A
-INNER JOIN
-    (
+    TO_NUMBER(TO_CHAR(CRCRH.start_date,'MM')) AS month,
+    CRCRH.car_id AS car_id,
+    COUNT(*) AS records
+FROM CAR_RENTAL_COMPANY_RENTAL_HISTORY CRCRH
+INNER JOIN (
     SELECT
-        CAR_ID
-    FROM
-        CAR_RENTAL_COMPANY_RENTAL_HISTORY
-    WHERE
-        START_DATE BETWEEN '2022-08-01' AND '2022-10-31'
-    GROUP BY
-        CAR_ID
+        car_id
+    FROM CAR_RENTAL_COMPANY_RENTAL_HISTORY
+    WHERE 
+        TO_CHAR(start_date, 'YYYY-MM') >= '2022-08' AND
+        TO_CHAR(start_date, 'YYYY-MM') <= '2022-10'
+    GROUP BY 
+        car_id
     HAVING
         COUNT(*) >= 5
-    ) AS B ON A.CAR_ID = B.CAR_ID
+) CRCRH2
+    ON CRCRH.car_id = CRCRH2.car_id
 WHERE
-    A.START_DATE BETWEEN '2022-08-01' AND '2022-10-31'
-GROUP BY
-    EXTRACT(MONTH FROM A.START_DATE), A.CAR_ID
+    TO_CHAR(CRCRH.start_date, 'YYYY-MM') >= '2022-08' AND
+    TO_CHAR(CRCRH.start_date, 'YYYY-MM') <= '2022-10'    
+GROUP BY 
+    TO_CHAR(CRCRH.start_date,'MM'),
+    CRCRH.car_id
 ORDER BY
-    MONTH ASC,
-    CAR_ID DESC;
+    month ASC,
+    car_id DESC
