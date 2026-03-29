@@ -1,21 +1,17 @@
+-- 회원 ID, 닉네임, 총거래금액
 SELECT
-    B.USER_ID,
-    B.NICKNAME,
-    SUM(A.PRICE) AS TOTAL_SALES
-
-FROM
-    USED_GOODS_BOARD AS A
-INNER JOIN
-    USED_GOODS_USER AS B ON A.WRITER_ID = B.USER_ID
-
+    UGU.user_id,
+    UGU.nickname,
+    SUM(UGB.price) AS TOTAL_SALES
+FROM USED_GOODS_BOARD UGB
+LEFT OUTER JOIN USED_GOODS_USER UGU
+    ON UGB.writer_id = UGU.user_id
 WHERE
-    A.STATUS = 'DONE'
-    
+    UGB.status = 'DONE'
 GROUP BY
-    A.WRITER_ID   
+    UGU.user_id,
+    UGU.nickname
 HAVING
-    SUM(A.PRICE) >= 700000
-    
+    SUM(UGB.price) >= 700000
 ORDER BY
-    TOTAL_SALES ASC;
-    
+    SUM(UGB.price) ASC
