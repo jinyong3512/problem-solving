@@ -1,24 +1,17 @@
-# 년, 월, 성별 별로 상품을 구매한 회원수
 SELECT
-    OS.YEAR1 AS YEAR,
-    OS.MONTH1 AS MONTH,
-    UI.GENDER AS GENDER,
-    COUNT(*) AS USERS
-FROM
-    (
-    SELECT
-        DATE_FORMAT(SALES_DATE,'%Y') AS YEAR1,
-        DATE_FORMAT(SALES_DATE,'%m') AS MONTH1,
-        USER_ID
-    FROM
-        ONLINE_SALE
-    GROUP BY
-        DATE_FORMAT(SALES_DATE,'%Y'),DATE_FORMAT(SALES_DATE,'%m'),USER_ID
-    ) AS OS
-INNER JOIN
-    USER_INFO AS UI ON (OS.USER_ID = UI.USER_ID AND UI.GENDER IS NOT NULL)
+    TO_CHAR(OS.sales_date, 'YYYY') AS YEAR,
+    TO_NUMBER(TO_CHAR(OS.sales_date, 'MM')) AS MONTH,
+    UI.gender AS GENDER,    
+    COUNT(DISTINCT(OS.user_id)) AS USERS
+FROM ONLINE_SALE OS
+LEFT OUTER JOIN USER_INFO UI
+    ON OS.user_id = UI.user_id
+WHERE
+    UI.gender IS NOT NULL
 GROUP BY
-    OS.YEAR1,OS.MONTH1,UI.GENDER
+    TO_CHAR(OS.sales_date, 'YYYY'),
+    TO_CHAR(OS.sales_date, 'MM'),
+    UI.gender
 ORDER BY
     YEAR ASC,
     MONTH ASC,
