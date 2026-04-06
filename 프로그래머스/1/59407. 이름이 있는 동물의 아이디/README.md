@@ -1,6 +1,6 @@
 # [level 1] 이름이 있는 동물의 아이디 - 59407 
 
-[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/59407) 
+[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/59407?language=oracle) 
 
 ### 성능 요약
 
@@ -12,11 +12,11 @@
 
 ### 채점결과
 
-Empty
+합계: 100.0 / 100.0
 
 ### 제출 일자
 
-2024년 07월 05일 18:53:31
+2026년 04월 06일 15:56:57
 
 ### 문제 설명
 
