@@ -1,21 +1,20 @@
-SELECT 
-    A.FLAVOR
-FROM
-    FIRST_HALF AS A
-LEFT OUTER JOIN
-    (
+SELECT
+    *
+FROM (
     SELECT
-        FLAVOR,
-        SUM(TOTAL_ORDER) AS SUM_TOTAL_ORDER
-    FROM
-        JULY
-    GROUP BY
-        FLAVOR
-    ) AS B ON A.FLAVOR = B.FLAVOR
-ORDER BY
-    IF(
-        B.SUM_TOTAL_ORDER IS NULL,
-        A.TOTAL_ORDER,
-        A.TOTAL_ORDER + B.SUM_TOTAL_ORDER
-    ) DESC
-LIMIT 3
+        FH.flavor
+    FROM FIRST_HALF FH 
+    LEFT OUTER JOIN (
+        SELECT
+            flavor,
+            SUM(total_order) AS sum_total_order
+        FROM JULY
+        GROUP BY
+            flavor
+    ) J2
+        ON FH.flavor = J2.flavor
+    ORDER BY
+        FH.total_order + J2.sum_total_order DESC
+)
+WHERE
+    ROWNUM < 4
