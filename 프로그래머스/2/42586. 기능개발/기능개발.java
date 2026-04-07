@@ -3,34 +3,38 @@ import java.util.*;
 class Solution {
     public int[] solution(int[] progresses, int[] speeds) {
         
-        ArrayList<Integer> arrayList = new ArrayList<>();
-        
-        for (int i = 0; i < progresses.length; i++) {
-            int q = (100 - progresses[i]) / speeds[i];
-            int r = (100 - progresses[i]) % speeds[i];
-            if (r != 0)
-                q++;
-            
-            int count = 1;
-            for(i++; i < progresses.length; i++) {
-                int q2 = (100 - progresses[i]) / speeds[i];
-                int r2 = (100 - progresses[i]) % speeds[i];
-                if (r2 != 0)
-                    q2++;
+        List<Integer> answerList = new ArrayList<>();
                 
-                if (q >= q2) {
-                    count++;
+        for (int i = 0; i < progresses.length; i++) {
+            int curDay = (100 - progresses[i]) / speeds[i];
+            if ((100 - progresses[i]) % speeds[i] != 0) {
+                curDay++;
+            }
+            
+            int j = i + 1;
+            for (; j < progresses.length; j++) {
+                int curDay2 = (100 - progresses[j]) / speeds[j];
+                if ((100 - progresses[j]) % speeds[j] != 0) {
+                    curDay2++;
+                }               
+                
+                if (curDay >= curDay2) {
+                    continue;
                 } else {
-                    i--;
                     break;
                 }
             }
-            arrayList.add(count);
-        }
+            
+            answerList.add(j - i);
+            
+            
+            i = j - 1;
+        }                
         
-        int[] answer = new int[arrayList.size()];
-        for (int i = 0; i < arrayList.size(); i++)
-            answer[i] = arrayList.get(i);
+        int[] answer = new int[answerList.size()];
+        for (int i = 0; i < answer.length; i++) {
+            answer[i] = answerList.get(i);
+        }
         
         return answer;
     }
