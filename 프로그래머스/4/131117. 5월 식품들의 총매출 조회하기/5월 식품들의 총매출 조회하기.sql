@@ -1,21 +1,16 @@
 SELECT
-    A.PRODUCT_ID AS PRODUCT_ID,
-    A.PRODUCT_NAME AS PRODUCT_NAME,
-    A.PRICE * B.SUM_AMOUNT AS TOTAL_SALES
-FROM
-    FOOD_PRODUCT AS A
-INNER JOIN
-    (
-    SELECT
-        PRODUCT_ID,
-        SUM(AMOUNT) AS SUM_AMOUNT
-    FROM 
-        FOOD_ORDER
-    WHERE
-        DATE_FORMAT(PRODUCE_DATE,'%Y-%m') = '2022-05'
-    GROUP BY
-        PRODUCT_ID
-    ) AS B ON A.PRODUCT_ID = B.PRODUCT_ID
+    FP.product_id, 
+    FP.product_name,
+    SUM(FO.amount) * FP.price AS TOTAL_SALES
+FROM FOOD_ORDER FO
+LEFT OUTER JOIN FOOD_PRODUCT FP
+    ON FO.product_id = FP.product_id
+WHERE
+    TO_CHAR(FO.produce_date, 'YYYY-MM') = '2022-05'
+GROUP BY
+    FP.product_id, 
+    FP.product_name,
+    FP.price
 ORDER BY
     TOTAL_SALES DESC,
-    PRODUCT_ID ASC
+    Fp.product_id ASC
