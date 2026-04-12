@@ -1,12 +1,14 @@
+-- 아이디와 이름을 조회
+-- 보호 시작일보다 입양일이 더 빠른 동물의 
+-- 보호 시작일이 빠른 순으로 조회
+
 SELECT
-    A.ANIMAL_ID AS ANIMAL_ID,
-    A.NAME AS NAME
-FROM 
-    ANIMAL_INS AS A
-INNER JOIN
-    ANIMAL_OUTS AS B
-    ON A.ANIMAL_ID = B.ANIMAL_ID
+    AI.animal_id,
+    AI.name
+FROM ANIMAL_INS AI
+INNER JOIN ANIMAL_OUTS AO
+    ON AI.animal_id = AO.animal_id
 WHERE
-    A.DATETIME > B.DATETIME 
+    AI.datetime > AO.datetime
 ORDER BY
-    A.DATETIME ASC;
+    AI.datetime ASC

@@ -1,6 +1,6 @@
 # [level 3] 있었는데요 없었습니다 - 59043 
 
-[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/59043) 
+[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/59043?language=oracle) 
 
 ### 성능 요약
 
@@ -12,11 +12,11 @@
 
 ### 채점결과
 
-Empty
+합계: 100.0 / 100.0
 
 ### 제출 일자
 
-2024년 07월 06일 00:24:15
+2026년 04월 12일 09:13:19
 
 ### 문제 설명
 
