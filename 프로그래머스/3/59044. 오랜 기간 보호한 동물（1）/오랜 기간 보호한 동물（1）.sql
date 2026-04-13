@@ -1,14 +1,18 @@
+-- 아직 입양을 못 간 동물 중, 가장 오래 보호소에 있었던 동물 3마리의 이름과 보호 시작일을 조회
+-- 보호 시작일 순으로 조회
+
 SELECT
-    A.NAME AS NAME,
-    A.DATETIME AS DATETIME
-FROM
-    ANIMAL_INS AS A
-LEFT JOIN 
-    ANIMAL_OUTS AS B ON A.ANIMAL_ID = B.ANIMAL_ID
-WHERE 
-    B.DATETIME IS NULL
-ORDER BY
-    A.DATETIME ASC
-LIMIT 
-    3
-    
+    name,
+    datetime
+FROM (
+    SELECT AI.*
+    FROM ANIMAL_INS AI
+    LEFT OUTER JOIN ANIMAL_OUTS AO
+        ON AI.animal_id = AO.animal_id
+    WHERE
+        AO.animal_id IS NULL
+    ORDER BY
+        AI.datetime ASC
+)
+WHERE
+    ROWNUM < 4
