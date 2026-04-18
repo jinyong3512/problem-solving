@@ -1,6 +1,6 @@
 # [level 2] 조건에 부합하는 중고거래 상태 조회하기 - 164672 
 
-[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/164672) 
+[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/164672?language=oracle) 
 
 ### 성능 요약
 
@@ -12,11 +12,11 @@
 
 ### 채점결과
 
-Empty
+합계: 100.0 / 100.0
 
 ### 제출 일자
 
-2024년 07월 08일 00:18:23
+2026년 04월 18일 17:43:44
 
 ### 문제 설명
 
