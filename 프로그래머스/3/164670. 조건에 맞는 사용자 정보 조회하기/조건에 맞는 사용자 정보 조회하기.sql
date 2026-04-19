@@ -1,27 +1,23 @@
--- 코드를 입력하세요
+-- 중고 거래 게시물을 3건 이상 등록한 사용자의 사용자 ID, 닉네임, 전체주소, 전화번호를 조회하는 SQL문을 작성
+-- 이때, 전체 주소는 시, 도로명 주소, 상세 주소가 함께 출력
+-- 전화번호의 경우 xxx-xxxx-xxxx 같은 형태로 하이픈 문자열(-)을 삽입하여 출력
+-- 회원 ID를 기준으로 내림차순 정렬
+
 SELECT
-    A.USER_ID,
-    A.NICKNAME,
-    CONCAT(A.CITY,' ',A.STREET_ADDRESS1,' ',A.STREET_ADDRESS2) AS 전체주소,
-    CONCAT(
-        SUBSTRING(A.TLNO,1,3),
-        '-',
-        SUBSTRING(A.TLNO,4,4),
-        '-',
-        SUBSTRING(A.TLNO,8,4)
-    ) AS 전화번호
-FROM
-    USED_GOODS_USER AS A
-INNER JOIN(
+    user_id,
+    nickname,
+    city || ' ' || street_address1 || ' ' || street_address2 AS 전체주소,
+    SUBSTR(tlno, 1, 3) || '-' || SUBSTR(tlno, 4, 4) || '-' || SUBSTR(tlno, 8, 4) AS 전화번호
+FROM USED_GOODS_USER
+WHERE
+    user_id IN (
     SELECT
-        WRITER_ID,
-        COUNT(WRITER_ID)
-    FROM
-        USED_GOODS_BOARD
+        writer_id
+    FROM USED_GOODS_BOARD
     GROUP BY
-        WRITER_ID
+        writer_id
     HAVING
-        COUNT(WRITER_ID) >=3
-    ) AS B ON A.USER_ID = B.WRITER_ID
+        COUNT(*) >= 3
+)
 ORDER BY
-    A.USER_ID DESC;
+    user_id DESC
