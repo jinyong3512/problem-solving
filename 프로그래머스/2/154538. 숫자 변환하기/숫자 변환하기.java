@@ -1,29 +1,32 @@
+import java.util.*;
+
 class Solution {
     public int solution(int x, int y, int n) {
         
-        int[] count = new int[y + 1];
+        int[] dp = new int[y + 1];
+        for (int i = 0; i < dp.length; i++) {
+            dp[i] = Integer.MAX_VALUE;
+        }
         
-        for (int i = 0; i <= y; i++)
-            count[i] = Integer.MAX_VALUE;
-        
-        count[x] = 0;
-        
-        for (int i = x + 1; i <= y; i++) {
-            if (i - n >= 1 && count[i - n] != Integer.MAX_VALUE) {
-                count[i] = Math.min(count[i], count[i - n] + 1);
+        dp[x] = 0;
+        for (int i = x + 1; i <= y; i++) {                        
+            if (i - n >= 0 && dp[i - n] != Integer.MAX_VALUE) {
+                dp[i] = Math.min(dp[i], dp[i - n] + 1);
             }
-            if (i % 2 == 0 && count[i / 2] != Integer.MAX_VALUE) {
-                count[i] = Math.min(count[i], count[i / 2] + 1);
+            
+            if (i % 2 == 0 && dp[i / 2] != Integer.MAX_VALUE) {
+                dp[i] = Math.min(dp[i], dp[i / 2] + 1);
             }
-            if (i % 3 == 0 && count[i / 3] != Integer.MAX_VALUE) {
-                count[i] = Math.min(count[i], count[i / 3] + 1);
+            
+            if (i % 3 == 0 && dp[i / 3] != Integer.MAX_VALUE) {
+                dp[i] = Math.min(dp[i], dp[i / 3] + 1);
             }
         }
         
-        if (count[y] == Integer.MAX_VALUE)
+        if (dp[y] == Integer.MAX_VALUE) {
             return -1;
-        else
-            return count[y];
-        
+        } else {
+            return dp[y];
+        }
     }
 }
