@@ -1,9 +1,7 @@
 SELECT
     *
-FROM
-    CAR_RENTAL_COMPANY_CAR
-WHERE
-    OPTIONS LIKE '%네비게이션%'
+FROM CAR_RENTAL_COMPANY_CAR 
+WHERE 
+    options LIKE '%네비게이션%'
 ORDER BY
-    CAR_ID DESC;
-    
+    car_id DESC
