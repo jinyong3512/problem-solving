@@ -1,10 +1,10 @@
 # [level 2] 루시와 엘라 찾기 - 59046 
 
-[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/59046) 
+[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/59046?language=oracle) 
 
 ### 성능 요약
 
-메모리: 0.0 MB, 시간: 0.00 ms
+메모리: undefined, 시간: 
 
 ### 구분
 
@@ -12,11 +12,11 @@
 
 ### 채점결과
 
-Empty
+합계: 100.0 / 100.0
 
 ### 제출 일자
 
-2024년 07월 06일 16:07:57
+2026년 05월 04일 09:24:49
 
 ### 문제 설명
 
