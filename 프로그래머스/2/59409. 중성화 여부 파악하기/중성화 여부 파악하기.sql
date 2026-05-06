@@ -1,13 +1,11 @@
 -- 코드를 입력하세요
 SELECT
-    ANIMAL_ID,
-    NAME,
-    IF(
-        SEX_UPON_INTAKE LIKE '%Neutered%' OR SEX_UPON_INTAKE LIKE '%Spayed%',
-        'O',
-        'X'
-    )
-FROM
-    ANIMAL_INS
+    animal_id,
+    name,
+    CASE 
+        WHEN sex_upon_intake LIKE '%Neutered%' OR sex_upon_intake LIKE '%Spayed%' THEN 'O'
+        ELSE 'X'
+    END
+FROM ANIMAL_INS 
 ORDER BY
-    ANIMAL_ID ASC;
+    animal_id ASC
