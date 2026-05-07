@@ -1,16 +1,15 @@
 SELECT
-    # A. DATETIME,
-    # B. DATETIME,
-    A.ANIMAL_ID AS ANIMAL_ID,
-    A.NAME AS NAME
-    # B.DATETIME-A.DATETIME AS DATETIME
-    
-FROM
-    ANIMAL_INS AS A
-INNER JOIN
-    ANIMAL_OUTS AS B ON A.ANIMAL_ID = B.ANIMAL_ID
-
-ORDER BY
-    B.DATETIME - A.DATETIME DESC
-
-LIMIT 2
+    animal_id,
+    name
+FROM (
+    SELECT
+        AI.animal_id,
+        AI.name
+    FROM ANIMAL_INS AI
+    INNER JOIN ANIMAL_OUTS AO
+        ON AI.animal_id = AO.animal_id
+    ORDER BY
+        AO.datetime - AI.datetime DESC
+)
+WHERE
+    ROWNUM <= 2
