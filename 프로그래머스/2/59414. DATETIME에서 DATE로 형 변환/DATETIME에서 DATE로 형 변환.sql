@@ -1,10 +1,7 @@
--- 코드를 입력하세요
 SELECT
-    ANIMAL_ID,
-    NAME,
-    DATE_FORMAT(DATETIME,'%Y-%m-%d')
-FROM
-    ANIMAL_INS
+    animal_id,
+    name,
+    TO_CHAR(datetime, 'YYYY-MM-DD')
+FROM ANIMAL_INS
 ORDER BY
-    ANIMAL_ID;
-    
+    animal_id ASC
