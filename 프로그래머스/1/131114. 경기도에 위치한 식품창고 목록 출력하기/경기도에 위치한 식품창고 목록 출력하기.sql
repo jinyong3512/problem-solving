@@ -1,10 +1,14 @@
+-- 경기도에 위치한 창고의 ID, 이름, 주소, 냉동시설 여부를 조회
 SELECT
-    WAREHOUSE_ID,
-    WAREHOUSE_NAME,
-    ADDRESS,
-    NVL(FREEZER_YN, 'N') AS FREEZER_YN
+    warehouse_id,
+    warehouse_name,
+    address,
+    CASE 
+        WHEN freezer_yn IS NULL THEN 'N'
+        ELSE freezer_yn
+    END
 FROM FOOD_WAREHOUSE
 WHERE
-    address LIKE '경기도%'
-ORDER BY 
-    WAREHOUSE_ID ASC
+    address LIKE '%경기도%'
+ORDER BY
+    warehouse_id ASC
