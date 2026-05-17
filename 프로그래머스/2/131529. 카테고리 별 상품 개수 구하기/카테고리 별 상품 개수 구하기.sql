@@ -1,7 +1,8 @@
 SELECT
-    SUBSTR(PRODUCT_CODE, 1, 2),
+    SUBSTR(product_code, 1, 2),
     COUNT(*)
 FROM PRODUCT
-GROUP BY SUBSTR(PRODUCT_CODE, 1, 2)
+GROUP BY
+    SUBSTR(product_code, 1, 2)
 ORDER BY
-    SUBSTR(PRODUCT_CODE, 1, 2) ASC
+    SUBSTR(product_code, 1, 2) ASC
