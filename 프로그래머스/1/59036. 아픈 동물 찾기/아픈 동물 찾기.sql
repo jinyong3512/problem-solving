@@ -1,9 +1,8 @@
 SELECT
-    ANIMAL_ID,
-    NAME
-FROM
-    ANIMAL_INS
+    animal_id,
+    name
+FROM ANIMAL_INS
 WHERE
-    INTAKE_CONDITION = 'Sick'
+    intake_condition = 'Sick'
 ORDER BY
-    ANIMAL_ID ASC;
+    animal_id ASC
